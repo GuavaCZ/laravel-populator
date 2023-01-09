@@ -1,0 +1,28 @@
+{
+    "name": "guava/laravel-populator",
+    "description": "A laravel package for testing and production data seeding.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lukas Frey",
+            "email": "lukas.frey@guava.cz"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "orchestra/testbench": "^7.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Guava\\LaravelPopulator\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Guava\\LaravelPopulator\\PopulatorServiceProvider"
+            ]
+        }
+    }
+}
