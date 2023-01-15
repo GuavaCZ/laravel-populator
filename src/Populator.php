@@ -2,38 +2,51 @@
 
 namespace Guava\LaravelPopulator;
 
+use Guava\LaravelPopulator\Concerns\HasName;
 use Guava\LaravelPopulator\Exceptions\AbstractClassException;
 use ReflectionClass;
 
+/**
+ * The populator is used to populate your database with the defined samples of model items.
+ *
+ * @package Guava\LaravelPopulator
+ */
 abstract class Populator
 {
-    protected string $model;
-
-    public function getModel(): string
-    {
-        return $this->model;
-    }
+    use HasName;
 
     /**
+     * Define the samples you want to populate in here.
+     *
+     * @return Sample[]
+     */
+    public abstract function samples(): array;
+
+    /**
+     * Populates the database with the defined samples.
+     *
+     * A good way to call this method would be from a migration file.
+     *
      * @throws AbstractClassException
      */
-    public static function call(string|array $samples): void {
+    public static function call(): void {
         if ((new ReflectionClass(static::class))->isAbstract() ) {
             throw new AbstractClassException('Cannot call abstract Populator. You need to create and call an instance of the Populator class.');
         }
 
-        if (is_array($samples)) {
-            foreach ($samples as $sample) {
-                static::call($sample);
-            }
-        }
-
-        static::handle($samples);
+        (new static)->handle();
     }
 
-    private static function handle(string $sample): void
+    /**
+     * Calls the defined samples to populate the database.
+     *
+     * @return void
+     */
+    private function handle(): void
     {
-
+        foreach ($this->samples() as $sample) {
+            $sample->handle($this);
+        }
     }
 
 }

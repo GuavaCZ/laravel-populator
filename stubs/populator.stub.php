@@ -5,8 +5,11 @@ use Guava\LaravelPopulator\Populator;
 
 class DummyClass extends Populator
 {
-    public function myFoo()
+
+    public function samples(): array
     {
-        // foo
+        return [
+            // Sample::make(User::class),
+        ];
     }
 }

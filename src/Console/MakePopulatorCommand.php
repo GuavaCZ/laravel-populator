@@ -3,6 +3,7 @@
 namespace Guava\LaravelPopulator\Console;
 
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Stringable;
 use function str;
 
@@ -39,12 +40,19 @@ class MakePopulatorCommand extends GeneratorCommand
         return $rootNamespace . '\Populators';
     }
 
+    /**
+     * Creates the files for the populator.
+     *
+     * @return bool
+     * @throws FileNotFoundException
+     */
     public function handle(): bool
     {
         parent::handle();
 
         $name = str($this->getNameInput())
             ->beforeLast('Populator')
+//            ->append('/user/')
             ->append('/')
             ->append(str($this->getSampleStub())
                 ->afterLast('/')
@@ -55,7 +63,7 @@ class MakePopulatorCommand extends GeneratorCommand
 
         $this->makeDirectory($path);
 
-        $this->files->put($path, file_get_contents($this->getSampleStub()));
+//        $this->files->put($path, file_get_contents($this->getSampleStub()));
 
         return true;
     }
