@@ -15,6 +15,8 @@ abstract class Populator
 {
     use HasName;
 
+    public Memory $memory;
+
     /**
      * Define the samples you want to populate in here.
      *
@@ -44,6 +46,8 @@ abstract class Populator
      */
     private function handle(): void
     {
+        $this->memory = new Memory;
+
         foreach ($this->samples() as $sample) {
             $sample->handle($this);
         }
