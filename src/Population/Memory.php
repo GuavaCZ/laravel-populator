@@ -1,6 +1,6 @@
 <?php
 
-namespace Guava\LaravelPopulator;
+namespace Guava\LaravelPopulator\Population;
 
 use Illuminate\Support\Arr;
 
@@ -22,6 +22,11 @@ class Memory
     public function has(string $model, string $key): bool
     {
         return Arr::has($this->memory, "$model.$key");
+    }
+
+    public function all(): array
+    {
+        return $this->memory;
     }
 
 }

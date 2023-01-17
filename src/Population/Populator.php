@@ -1,6 +1,6 @@
 <?php
 
-namespace Guava\LaravelPopulator;
+namespace Guava\LaravelPopulator\Population;
 
 use Guava\LaravelPopulator\Concerns\HasName;
 use Guava\LaravelPopulator\Exceptions\AbstractClassException;
@@ -31,8 +31,9 @@ abstract class Populator
      *
      * @throws AbstractClassException
      */
-    public static function call(): void {
-        if ((new ReflectionClass(static::class))->isAbstract() ) {
+    public static function call(): void
+    {
+        if ((new ReflectionClass(static::class))->isAbstract()) {
             throw new AbstractClassException('Cannot call abstract Populator. You need to create and call an instance of the Populator class.');
         }
 

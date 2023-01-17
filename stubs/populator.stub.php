@@ -1,7 +1,7 @@
 <?php
 namespace DummyNamespace;
 
-use Guava\LaravelPopulator\Populator;
+use Guava\LaravelPopulator\Population\Populator;
 
 class DummyClass extends Populator
 {
