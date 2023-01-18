@@ -48,7 +48,12 @@ class Sample
 
         collect(File::files($path))
             ->each(function (\SplFileInfo $file) {
-                $this->processor->process($file);
+                $data = include $file->getPathname();
+                $name = str($file->getFilename())
+                    ->beforeLast('.')
+                    ->toString();
+
+                $this->processor->process($data, $name);
             });
     }
 

@@ -27,23 +27,16 @@ class Processor
 
 
     /**
-     * Processes the passed file through a set of pipelines.
+     * Processes the passed data through a set of pipelines.
      *
-     * @param \SplFileInfo $file
+     * @param array|Collection $data The data to process.
+     * @param string $name Name of the current 'process'.
      * @return void
      */
-    public function process(array|\SplFileInfo $file, string $name = null): void
+    public function process(array|Collection $data, string $name): void
     {
-        if ($file instanceof \SplFileInfo) {
-            $this->file = $file;
-            $this->data = collect(include $file->getPathname());
-            $this->name = str($file->getFilename())
-                ->beforeLast('.')
-                ->toString();
-        } else {
-            $this->data = collect($file);
-            $this->name = $name;
-        }
+        $this->data = is_array($data) ? collect($data) : $data;
+        $this->name = $name;
 
         $this->data->pipeThrough([
             $this->relations(...),
