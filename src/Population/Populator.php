@@ -2,6 +2,7 @@
 
 namespace Guava\LaravelPopulator\Population;
 
+use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
 use Guava\LaravelPopulator\Exceptions\AbstractClassException;
 use ReflectionClass;
@@ -14,6 +15,7 @@ use ReflectionClass;
 abstract class Populator
 {
     use HasName;
+    use HasEnvironments;
 
     public Memory $memory;
 
@@ -47,6 +49,10 @@ abstract class Populator
      */
     private function handle(): void
     {
+        if (!$this->checkEnvironment()) {
+            return;
+        }
+
         $this->memory = new Memory;
 
         foreach ($this->samples() as $sample) {

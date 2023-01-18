@@ -3,6 +3,7 @@
 namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Console\MakePopulatorCommand;
+use Guava\LaravelPopulator\Console\MakeSampleCommand;
 use Illuminate\Support\ServiceProvider;
 
 class PopulatorServiceProvider extends ServiceProvider
@@ -22,6 +23,7 @@ class PopulatorServiceProvider extends ServiceProvider
 
             $this->commands([
                 MakePopulatorCommand::class,
+//                MakeSampleCommand::class,
             ]);
         }
     }

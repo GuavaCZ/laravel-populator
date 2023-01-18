@@ -2,16 +2,18 @@
 
 namespace Guava\LaravelPopulator\Population;
 
+use Guava\LaravelPopulator\Exceptions\InvalidSampleException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * The processor is responsible for processing the samples.
+ */
 class Processor
 {
-
     protected Sample $sample;
 
     protected \SplFileInfo $file;
@@ -21,6 +23,12 @@ class Processor
     protected Memory $memory;
 
 
+    /**
+     * Processes the passed file through a set of pipelines.
+     *
+     * @param \SplFileInfo $file
+     * @return void
+     */
     public function process(\SplFileInfo $file): void
     {
         $this->file = $file;
@@ -28,7 +36,6 @@ class Processor
         $this->name = str($file->getFilename())
             ->beforeLast('.')
             ->toString();
-
 
         $this->data->pipeThrough([
             $this->relations(...),
@@ -38,9 +45,15 @@ class Processor
         ]);
     }
 
+    /**
+     * Parses the relations defined on the model and processes the supported relations.
+     *
+     * @param Collection $data
+     * @return Collection
+     * @throws InvalidSampleException
+     */
     protected function relations(Collection $data): Collection
     {
-        Log::info($data->get('relations', 'NO RELATIONS'));
         if (!$data->has('relations')) {
             return $data;
         }
@@ -65,20 +78,32 @@ class Processor
                                 return [];
                             }
 
-                            throw new \Exception('Invalid relation configuration');
+                            throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
                         })
                 ));
     }
 
+    /**
+     * Processes the belongs to relationship and sets the foreign key.
+     *
+     * @param BelongsTo $relation
+     * @param string $value
+     * @return array
+     */
     protected function belongsTo(BelongsTo $relation, string $value): array
     {
-//        dd($relation);
-
         $id = $this->sample->populator->memory->get($relation->getRelated()::class, $value);
 
         return [$relation->getForeignKeyName() => $id];
     }
 
+    /**
+     * Processes the belongs to many relationship and queues the relation for creation.
+     *
+     * @param BelongsToMany $relation
+     * @param array $value
+     * @return void
+     */
     protected function belongsToMany(BelongsToMany $relation, array $value): void
     {
         foreach ($value as $identifier) {
@@ -92,10 +117,14 @@ class Processor
                 ],
             ]);
         }
-
-//        dd($this->memory);
     }
 
+    /**
+     * Mutes the attributes of the model using the defined mutators.
+     *
+     * @param Collection $data
+     * @return Collection
+     */
     protected function mutate(Collection $data): Collection
     {
         return $data
@@ -110,6 +139,12 @@ class Processor
                 }));
     }
 
+    /**
+     * Inserts the model into the database.
+     *
+     * @param Collection $data
+     * @return Collection
+     */
     protected function insert(Collection $data): Collection
     {
         $id = DB::table($this->sample->table)
@@ -120,7 +155,14 @@ class Processor
         return $data;
     }
 
-    protected function related(Collection $data): Collection {
+    /**
+     * Handles the queued related models and inserts them into the database.
+     *
+     * @param Collection $data
+     * @return Collection
+     */
+    protected function related(Collection $data): Collection
+    {
         $id = $this->sample->populator->memory->get($this->sample->model::class, $this->name);
 
         foreach ($this->memory->all() as $table => $relations) {
@@ -138,12 +180,21 @@ class Processor
         return $data;
     }
 
+    /**
+     * Creates an instance of the class.
+     */
     private function __construct(Sample $sample)
     {
         $this->sample = $sample;
         $this->memory = new Memory();
     }
 
+    /**
+     * Static factory to create an instance of the class.
+     *
+     * @param Sample $sample
+     * @return static
+     */
     public static function make(Sample $sample): static
     {
         return new static($sample);
