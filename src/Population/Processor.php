@@ -55,44 +55,50 @@ class Processor
      */
     protected function relations(Collection $data): Collection
     {
-        if (!$data->has('relations')) {
-            return $data;
-        }
-
-        if (empty($data->get('relations', []))) {
-            return $data;
-        }
+//        if (!$data->has('relations')) {
+//            return $data;
+//        }
+//
+//        if (empty($data->get('relations', []))) {
+//            return $data;
+//        }
 
         return $data
             ->pipe(fn($collection) => $collection
-                ->except(['relations'])
-                ->mergeRecursive(
-                    collect($data->get('relations'))
+//                ->except(['relations'])
+//                ->mergeRecursive(
+//                    collect($data)
                         ->mapWithKeys(function ($value, $relationName) use ($data) {
-                            $relation = $this->sample->model->$relationName();
+                            if ($this->sample->model->isRelation($relationName)) {
+                                $relation = $this->sample->model->$relationName();
 
+                                if ($relation instanceof MorphTo) {
+                                    return $this->morphTo($relation, $value);
+                                }
 
-                            if ($relation instanceof MorphTo) {
-                                return $this->morphTo($relation, $value);
-                            }
+                                if ($relation instanceof MorphMany) {
+                                    $this->morphMany($relation, $value);
+                                    return [];
+                                }
 
-                            if ($relation instanceof MorphMany) {
-                                $this->morphMany($relation, $value);
-                                return [];
-                            }
+                                if ($relation instanceof BelongsTo) {
+                                    return $this->belongsTo($relation, $value);
+                                }
 
-                            if ($relation instanceof BelongsTo) {
-                                return $this->belongsTo($relation, $value);
-                            }
-
-                            if ($relation instanceof BelongsToMany) {
-                                $this->belongsToMany($relation, $value);
-                                return [];
+                                if ($relation instanceof BelongsToMany) {
+                                    $this->belongsToMany($relation, $value);
+                                    return [];
+                                }
+                            } else {
+                                return [$relationName => $value];
                             }
 
                             throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
                         })
-                ));
+                )
+//            ->when(fn(Collection $collection) => $this->sample->model::class === 'App\Models\Post',
+//            fn(Collection $collection) => $collection->dd())
+            ;
     }
 
     /**
@@ -167,35 +173,34 @@ class Processor
      * @param string $value
      * @return array
      */
-    protected function morphMany(MorphMany $relation, array|int $value): void
+    protected function morphMany(MorphMany $relation, array $items): void
     {
 //        $relation->getRelated()->getTable()
 //        dd($relation);
 
+//        dd($relation, $items);
 
-        if (is_int($value)) {
-            $value = Collection::times($value, fn() => []);
-        }
+
+//        if (is_int($value)) {
+//            $value = Collection::times($value, fn() => []);
+//        }
 
         $index = 0;
-        foreach ($value as $unit) {
+        foreach ($items as $item) {
 //            $processor = new Processor($sample);
 
             $morphName = Str::beforeLast($relation->getForeignKeyName(), '_');
-            $unit = collect($unit)->mergeRecursive([
-                'relations' => [
-                    $morphName => [$this->name, $relation->getMorphClass()],
-                ]
+            $item = collect($item)->merge([
+                $morphName => [$this->name, $relation->getMorphClass()],
             ])->toArray();
-//            dd($unit);
-
-//            dd($processor->process($unit));
 
             $otherMorphName = Str::before($relation->getQualifiedForeignKeyName(), '.');
+//            dump($relation->getRelated()->getTable(), "{$this->name}_{$otherMorphName}_{$index}");
+
             $this->memory->set($relation->getRelated()->getTable(), "{$this->name}_{$otherMorphName}_{$index}", [
                 'relation' => 'morphMany',
                 'related' => $relation->getRelated()::class,
-                'model' => $unit,
+                'model' => $item,
 //                'morph' => [
 //                    'related' => $relation->getRelated()::class,
 //                    'name' => $morphName,

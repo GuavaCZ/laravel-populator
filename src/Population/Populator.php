@@ -53,7 +53,7 @@ abstract class Populator
             return;
         }
 
-        $this->memory = new Memory;
+        $this->memory = new Memory();
 
         foreach ($this->samples() as $sample) {
             $sample->handle($this);
