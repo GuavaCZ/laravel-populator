@@ -22,7 +22,7 @@ class Sample
     public array $mutators = [];
     public Populator $populator;
 
-    protected Processor $processor;
+//    protected Processor $processor;
 
     /**
      * Can be used to set up repeating samples.
@@ -53,7 +53,8 @@ class Sample
                     ->beforeLast('.')
                     ->toString();
 
-                $this->processor->process($data, $name);
+                Processor::make($this)
+                    ->process($data, $name);
             });
     }
 
@@ -78,7 +79,6 @@ class Sample
     {
         $this->model = new $model;
         $this->table = $this->model->getTable();
-        $this->processor = Processor::make($this);
     }
 
 
