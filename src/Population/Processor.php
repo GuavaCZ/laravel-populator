@@ -5,9 +5,12 @@ namespace Guava\LaravelPopulator\Population;
 use Guava\LaravelPopulator\Exceptions\InvalidSampleException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * The processor is responsible for processing the samples.
@@ -29,13 +32,18 @@ class Processor
      * @param \SplFileInfo $file
      * @return void
      */
-    public function process(\SplFileInfo $file): void
+    public function process(array|\SplFileInfo $file, string $name = null): void
     {
-        $this->file = $file;
-        $this->data = collect(include $file->getPathname());
-        $this->name = str($file->getFilename())
-            ->beforeLast('.')
-            ->toString();
+        if ($file instanceof \SplFileInfo) {
+            $this->file = $file;
+            $this->data = collect(include $file->getPathname());
+            $this->name = str($file->getFilename())
+                ->beforeLast('.')
+                ->toString();
+        } else {
+            $this->data = collect($file);
+            $this->name = $name;
+        }
 
         $this->data->pipeThrough([
             $this->relations(...),
@@ -67,12 +75,23 @@ class Processor
                 ->except(['relations'])
                 ->mergeRecursive(
                     collect($data->get('relations'))
-                        ->mapWithKeys(function ($value, $relationName) {
+                        ->mapWithKeys(function ($value, $relationName) use ($data) {
                             $relation = $this->sample->model->$relationName();
+
+
+                            if ($relation instanceof MorphTo) {
+                                return $this->morphTo($relation, $value);
+                            }
+
+                            if ($relation instanceof MorphMany) {
+                                $this->morphMany($relation, $value);
+                                return [];
+                            }
 
                             if ($relation instanceof BelongsTo) {
                                 return $this->belongsTo($relation, $value);
                             }
+
                             if ($relation instanceof BelongsToMany) {
                                 $this->belongsToMany($relation, $value);
                                 return [];
@@ -108,6 +127,7 @@ class Processor
     {
         foreach ($value as $identifier) {
             $this->memory->set($relation->getTable(), $identifier, [
+                'relation' => 'belongsToMany',
                 'foreign' => [
                     'pivot_key' => $relation->getForeignPivotKeyName()
                 ],
@@ -116,6 +136,82 @@ class Processor
                     'id' => $this->sample->populator->memory->get($relation->getRelated()::class, $identifier),
                 ],
             ]);
+        }
+    }
+
+    /**
+     * Processes the belongs to relationship and sets the foreign key.
+     *
+     * @param MorphTo $relation
+     * @param array $value
+     * @return array
+     */
+    protected function morphTo(MorphTo $relation, array $value): array
+    {
+        $id = $this->sample->populator->memory->get($value[1], $value[0]);
+
+        return [$relation->getForeignKeyName() => $id, $relation->getMorphType() => $value[1]];
+    }
+
+
+    /**
+     * Processes the belongs to relationship and sets the foreign key.
+     *
+     * @param MorphMany $relation
+     * @param string $value
+     * @return array
+     */
+    protected function morphMany(MorphMany $relation, array|int $value): void
+    {
+//        $relation->getRelated()->getTable()
+//        dd($relation);
+
+
+        if (is_int($value)) {
+            $value = Collection::times($value, fn() => []);
+        }
+
+        $index = 0;
+        foreach ($value as $unit) {
+//            $processor = new Processor($sample);
+
+            $morphName = Str::beforeLast($relation->getForeignKeyName(), '_');
+            $unit = collect($unit)->mergeRecursive([
+                'relations' => [
+                    $morphName => [$this->name, $relation->getMorphClass()],
+                ]
+            ])->toArray();
+//            dd($unit);
+
+//            dd($processor->process($unit));
+
+            $otherMorphName = Str::before($relation->getQualifiedForeignKeyName(), '.');
+            $this->memory->set($relation->getRelated()->getTable(), "{$this->name}_{$otherMorphName}_{$index}", [
+                'relation' => 'morphMany',
+                'related' => $relation->getRelated()::class,
+                'model' => $unit,
+//                'morph' => [
+//                    'related' => $relation->getRelated()::class,
+//                    'name' => $morphName,
+//                    'foreign' => $relation->getForeignKeyName(),
+//                    'type' => $relation->getMorphType(),
+//                    'class' => $relation->getMorphClass(),
+//                ],
+//                'data' => $unit,
+            ]);
+            $index++;
+
+//                'foreign' => $relation->getForeignKeyName(),
+//                'type' => $relation->getMorphType(),
+//                'class' => $relation->getMorphClass(),
+//                'related' => $unit,
+// TODO: Reuse code from BelongsTo
+//                'data' => collect($unit)->mapWithKeys(function($identifier, $relation) {
+//                    $id = $this->sample->populator->memory->get($relation->getRelated()::class, $identifier);
+//
+//                    return [$relation->getForeignKeyName() => $id];
+//                }),
+//            ]);
         }
     }
 
@@ -167,12 +263,39 @@ class Processor
 
         foreach ($this->memory->all() as $table => $relations) {
 
-            foreach ($relations as $relation) {
-                DB::table($table)
-                    ->insert([
-                        $relation['foreign']['pivot_key'] => $id,
-                        $relation['related']['pivot_key'] => $relation['related']['id'],
-                    ]);
+            foreach ($relations as $name => $relation) {
+//                if (!Arr::has($relation,'relation')) {
+//                    dd($relations);
+//                }
+                if ($relation['relation'] === 'belongsToMany') {
+                    DB::table($table)
+                        ->insert([
+                            $relation['foreign']['pivot_key'] => $id,
+                            $relation['related']['pivot_key'] => $relation['related']['id'],
+                        ]);
+                }
+
+                if ($relation['relation'] === 'morphMany') {
+                    $sample = Sample::make($relation['related']);
+                    $sample->populator = $this->sample->populator;
+
+//                    dd($name);
+                    $processor = new Processor($sample);
+                    $processor->process($relation['model'], $name);
+
+//                    $morphName = Str::beforeLast($relation->getForeignKeyName(), '_');
+//                    $unit = collect($unit)
+//                        ->mergeRecursive([
+//                        'relations' => [
+//                            $morphName => [$this->name, $relation->getMorphClass()],
+//                        ]
+//                    ])->toArray();
+//                    DB::table($table)
+//                        ->insert([
+//                            Str::after($relation['foreign'], '.') => $id,
+//                            Str::after($relation['type'], '.') => $relation['class'],
+//                        ]);
+                }
             }
 
         }
