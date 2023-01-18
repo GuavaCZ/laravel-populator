@@ -104,7 +104,19 @@ class Processor
      */
     protected function belongsTo(BelongsTo $relation, string $value): array
     {
+        // Load from memory
         $id = $this->sample->populator->memory->get($relation->getRelated()::class, $value);
+
+        if (!$id) {
+            // Load by ID
+            if (is_numeric($value)) {
+                $id = $value;
+                // Load
+            } else {
+                [$key, $val] = explode(':', $value, 2);
+                $id = DB::table($relation->getRelated()->getTable())->where($key, $val)->first()->id;
+            }
+        }
 
         return [$relation->getForeignKeyName() => $id];
     }
@@ -119,6 +131,7 @@ class Processor
     protected function belongsToMany(BelongsToMany $relation, array $value): void
     {
         foreach ($value as $identifier) {
+//            dump($relation->getRelated()::class, $identifier, $this->sample->populator->memory->get($relation->getRelated()::class, $identifier));
             $this->memory->set($relation->getTable(), $identifier, [
                 'relation' => 'belongsToMany',
                 'foreign' => [
@@ -238,6 +251,11 @@ class Processor
     {
         $id = DB::table($this->sample->table)
             ->insertGetId($data->toArray());
+
+        // Get the ID if it's not auto incrementing
+        if (!$this->sample->model->getIncrementing()) {
+            $id = $data->get($this->sample->model->getKeyName());
+        }
 
         $this->sample->populator->memory->set($this->sample->model::class, $this->name, $id);
 

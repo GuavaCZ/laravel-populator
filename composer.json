@@ -1,6 +1,6 @@
 {
     "name": "guava/laravel-populator",
-    "description": "A laravel package for testing and production data seeding.",
+    "description": "A laravel package for seeding testing and production data.",
     "type": "library",
     "license": "MIT",
     "authors": [
