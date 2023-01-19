@@ -99,9 +99,13 @@ This populator will only be executed on the local environment.
 
 
 ## Bundles
-Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every record.
+Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every record. This is done by chaining additional methods described below.
 
-This is done by chaining additional methods described below.
+Creating a bundle is as simply as this:
+```php
+Bundle::make(Model::class, 'optional-name'),
+```
+Passing a name is optional and defines the name of the directory inside the populator's directory. If omitted, the name will be auto-generated from the model's class name. For example for the model `Foo` the name will be `foo`, for the model `FooBar` it would be `foo-bar`.
 
 ### Environment
 Similar to populators, you can also define specific environments for each bundle separately. To do so, chain the `environments` method on the Bundle itself:
