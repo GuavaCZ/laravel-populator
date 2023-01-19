@@ -56,8 +56,8 @@ class Populator
 
         $this->memory = new Memory();
 
-        foreach ($this->bundles as $sample) {
-            $sample->handle($this);
+        foreach ($this->bundles as $bundle) {
+            $bundle->handle($this);
         }
     }
 
