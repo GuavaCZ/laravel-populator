@@ -44,8 +44,8 @@ return new class extends Migration {
                     ->records([
                         'admin' => [
                             'name' => 'Administrator',
-                            'email' => 'admin@guava.cz',
-                            'password' => 'admin123',
+                            'email' => 'admin@example.tld',
+                            'password' => 'my-strong-password',
                         ],
                     ]),
                     
@@ -64,6 +64,18 @@ return new class extends Migration {
     }
     
 }
+```
+example record `/database/populators/initial/post/example-post.php`:
+```php
+<?php
+
+return [
+    'name' => 'Example post',
+    'content' => 'Lorem ipsum dolor sit amet',
+
+    'author' => 'admin', // could also be ID or specific column:value, like email:admin@example.tld
+    'tags' => ['Technology', 'Design', 'Off-topic'],
+];
 ```
 
 ## Usage
