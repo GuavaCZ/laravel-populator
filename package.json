@@ -1,5 +1,5 @@
 {
-  "name": "@guava/filament-icon-picker",
+  "name": "@guava/laravel-populator",
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/commit-analyzer": "^9.0.2",
