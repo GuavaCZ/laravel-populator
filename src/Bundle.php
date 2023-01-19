@@ -2,6 +2,7 @@
 
 namespace Guava\LaravelPopulator;
 
+use Exception;
 use Guava\LaravelPopulator\Concerns\Bundle\HasDefaults;
 use Guava\LaravelPopulator\Concerns\Bundle\HasGenerators;
 use Guava\LaravelPopulator\Concerns\Bundle\HasMutators;
@@ -40,6 +41,7 @@ class Bundle
      * Parses all samples from the populators directory and attempts to insert them into the database.
      * @param Populator $populator
      * @return void
+     * @throws Exception
      */
     public function handle(Populator $populator): void
     {
@@ -60,11 +62,10 @@ class Bundle
             return;
         }
 
-        $path = database_path("populators/{$populator->getName($populator->name)}/{$this->getName($this->model::class)}");
+        $path = database_path("populators/{$populator->getName()}/{$this->getName($this->model::class)}");
 
         if (!File::exists($path)) {
-            // TODO: write to CLI
-            return;
+            throw new Exception("The path '$path' does not exist. Please make sure all folders for the populator and it's bundles are created.");
         }
 
         collect(File::files($path))
@@ -82,9 +83,10 @@ class Bundle
     /**
      * Creates an instance of the class.
      */
-    private final function __construct(string $model)
+    private final function __construct(string $model, string $name = null)
     {
         $this->model = new $model;
+        $this->name = $name;
         $this->table = $this->model->getTable();
     }
 
@@ -93,10 +95,11 @@ class Bundle
      * Static factory to create an instance of the class.
      *
      * @param string $model
+     * @param string|null $name
      * @return static
      */
-    public static function make(string $model): static
+    public static function make(string $model, string $name = null): static
     {
-        return new static($model);
+        return new static($model, $name);
     }
 }
