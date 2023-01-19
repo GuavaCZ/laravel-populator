@@ -110,6 +110,21 @@ Records can of course have relations with other records. Currently supported rel
 - polymorphic one to one and it's inverse
 - polymorphic one to many and it's inverse (`morphMany`)
 
+### Referencing other records
+Other records can be referenced in multiple ways, the package tries all three of them in this specific order.
+
+#### By their identifier (key)
+This works only from within the same populator (across all bundles). The key is the name of the file, so in case of the `john-doe.php` example file from earlier, the key would be `john-doe`.
+
+In case you supplied the records to the bundle directly via the `records()` method, the key is the array key you set.
+
+#### By their primary key
+If no key was found, the package assumes the provided key is the primary key and attempts to find the record in the database. If the record exists, the primary key will be used.
+
+#### by a (preferably unique) column
+You can also reference records using any column you like. For example, to reference John Doe from other records, you could reference their e-mail using `email:john.doe@example.tld`. The package will then attempt to find the record with that e-mail address.
+
+
 ### One to One
 Let's say we have a `User` model that has one `Address` relation. You can define the relation in the `Address` bundle like this:
 ```php
@@ -120,6 +135,23 @@ return [
     'state' => 'Example State',
     'zip' => '12345',
     'user' => 'admin',
+];
+```
+This will attempt to associate the address with the user record `admin`.
+
+You could also reference the user their primary key:
+```php
+return [
+    ...
+    'user' => 1,
+];
+```
+
+Or using a column of your choice:
+```php
+return [
+    ...
+    'user' => 'email:john.doe@example.tld',
 ];
 ```
 
@@ -139,11 +171,10 @@ return [
     ]
 ];
 ```
+This will create a user and associate it with a newly created address record with the specified attributes.
 
 ### One to Many
-Imagine we had a `Posts` bundle that had a one to many relation to the `author` (John Doe) created in the first example. There are three options to define the relation.
-
-Using the record's key (the filename we chose):
+Imagine we had a `Posts` bundle that had a one to many relation to the `author` (John Doe) created in the very first example. We simply use the record's key to associate it with the post.
 ```php
 <?php
 return [
@@ -152,29 +183,6 @@ return [
     'author' => 'john-doe',
 ];
 ```
-Keep in mind that the above example works only for records created within the same populator, as the key is stored in temporary memory only.
-
-Using the primary key:
-```php
-<?php
-return [
-    'name' => 'Example post',
-    'slug' => 'example-post',
-    'author' => 1,
-];
-```
-
-Using a (preferably) unique key:
-```php
-<?php
-return [
-    'name' => 'Example post',
-    'slug' => 'example-post',
-    'author' => 'email:john.doe@example.tld',
-];
-```
-
-It's up to you which way you prefer.
 
 ### Many to Many
 If we wanted to modify the above example and also add a `many to many` relation to `tags`, it's as simple as this:
@@ -187,6 +195,7 @@ return [
     'tags' => ['technology', 'design', 'off-topic']
 ];
 ```
+This will attach the post with the specified tags.
 
 ### Polymorphic One to Many
 Now imagine we had a `Comment` model which has a polymorphic relation to the `Post` model.
