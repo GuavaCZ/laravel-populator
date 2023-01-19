@@ -22,6 +22,15 @@
             "Guava\\LaravelPopulator\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Guava\\LaravelPopulator\\": "src/",
+            "Guava\\LaravelPopulator\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "extra": {
         "laravel": {
             "providers": [
