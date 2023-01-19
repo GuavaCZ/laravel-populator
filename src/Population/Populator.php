@@ -6,7 +6,7 @@ use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
 
 /**
- * The populator is used to populate your database with the defined samples of model items.
+ * The populator is used to populate your database with the defined bundles of model records.
  *
  * @package Guava\LaravelPopulator
  */
