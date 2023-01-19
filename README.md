@@ -67,7 +67,7 @@ return [
 
 That's it! When the migration is run, it will create all records from the populator's bundles.
 
-Please note that the password will not be hashed, in order to hash all passwords please refer to the documentation below.
+Please note that the password will not be hashed, in order to hash all passwords or to learn more about all the customization options, please refer to the documentation below.
 
 ## Populators
 Populators serve as a group of bundles of records that you want to populate. The reason for this kind of grouping is that during the lifetime of your application, you might want to add another batch of data to your application in mid-production. As we know, developers hate to come up with names and to avoid ending up with bundles named `users1`, `users2`, `users-new`, `yet-another-batch-of-users`, we decided to group them into populators so you only have to come up with a single name. :)
