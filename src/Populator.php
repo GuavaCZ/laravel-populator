@@ -1,9 +1,10 @@
 <?php
 
-namespace Guava\LaravelPopulator\Population;
+namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
+use Guava\LaravelPopulator\Storage\Memory;
 
 /**
  * The populator is used to populate your database with the defined bundles of model records.

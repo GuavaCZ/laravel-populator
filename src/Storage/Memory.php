@@ -1,6 +1,6 @@
 <?php
 
-namespace Guava\LaravelPopulator\Population;
+namespace Guava\LaravelPopulator\Storage;
 
 use Illuminate\Support\Arr;
 

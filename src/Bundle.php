@@ -1,8 +1,10 @@
 <?php
 
-namespace Guava\LaravelPopulator\Population;
+namespace Guava\LaravelPopulator;
 
-use Closure;
+use Guava\LaravelPopulator\Concerns\Bundle\HasDefaults;
+use Guava\LaravelPopulator\Concerns\Bundle\HasMutators;
+use Guava\LaravelPopulator\Concerns\Bundle\HasRecords;
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
 use Illuminate\Database\Eloquent\Model;
@@ -16,12 +18,13 @@ class Bundle
     use HasName;
     use HasEnvironments;
 
+    use HasDefaults;
+    use HasMutators;
+    use HasRecords;
+
     public Model $model;
     public string $table;
 
-    public array $records = [];
-    public array $mutators = [];
-    public array $defaults = [];
     public Populator $populator;
 
     /**
@@ -72,61 +75,6 @@ class Bundle
                 Processor::make($this)
                     ->process($data, $name);
             });
-    }
-
-    /**
-     * Mutates the specified attribute using the given callback.
-     *
-     * @param string $attribute Attribute to mutate.
-     * @param Closure $closure Callback to run on the attribute.
-     * @return $this
-     */
-    public function mutate(string $attribute, Closure $closure): static
-    {
-        $this->mutators[$attribute] = $closure;
-
-        return $this;
-    }
-
-    /**
-     * Adds default data to the specified attribute.
-     *
-     * @param string $attribute Attribute for default data.
-     * @param mixed $closure Callback to run on the attribute.
-     * @return $this
-     */
-    public function default(string $attribute, mixed $closure): static
-    {
-        $this->defaults[$attribute] = $closure;
-
-        return $this;
-    }
-
-    /**
-     * Adds a record to the bundle for population.
-     *
-     * @param string $key Key to access the record by from other records.
-     * @param array|Closure $record Data to populate the record with or closure returning the data.
-     * @return static
-     */
-    public function record(string $key, array|Closure $record): static
-    {
-        $this->records[$key] = is_callable($record) ? $record() : $record;
-
-        return $this;
-    }
-
-    /**
-     * Adds an array of records to the bundle for population.
-     *
-     * @param array|Closure $records Records to populate the bundle with or closure returning the records.
-     * @return static
-     */
-    public function records(array|Closure $records): static
-    {
-        $this->records = is_callable($records) ? $records() : $records;
-
-        return $this;
     }
 
     /**
