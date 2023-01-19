@@ -8,7 +8,7 @@ trait HasDefaults
     public array $defaults = [];
 
     /**
-     * Adds default data to the specified attribute.
+     * Adds a default attribute to the record.
      *
      * @param string $attribute Name of the attribute.
      * @param mixed $closure Callback to run on the attribute.
