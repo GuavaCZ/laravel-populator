@@ -104,9 +104,40 @@ Bundle::make(Post::class)
 ## Relations
 Records can of course have relations with other relations. Currently supported relations are:
 
+- one to one (`belongsTo`) and it's inverse (`hasOne`)
 - one to many (`belongsTo`)
 - many to many (`belongsToMany`)
 - polymorphic one to many (`morphTo`) and it's inverse (`morphMany`)
+
+### One to One
+Let's say we have a `User` model that has one `Address` relation. You can define the relation in the `Address` bundle like this:
+```php
+<?php
+return [
+    'street' => 'Example Street',
+    'city' => 'Example City',
+    'state' => 'Example State',
+    'zip' => '12345',
+    'user' => 'admin',
+];
+```
+
+### One to One (Inverse)
+Let's say we have a `User` model that has one `Address` relation. You can create an `Address` inside the `User`:
+```php
+<?php
+return [
+    'name' => 'Webmaster',
+    'email' => 'webmaster@example.tld',
+    'password' => 'my-strong-password',
+    'address' => [
+        'street' => 'Example street',
+        'city' => 'Example city',
+        'zip' => '12345',
+        'state' => 'Example State',
+    ]
+];
+```
 
 ### One to Many
 Imagine we had a `Posts` bundle that had a one to many relation to the `author` (John Doe) created in the first example. There are three options to define the relation.
