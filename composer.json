@@ -13,9 +13,9 @@
             "email": "stepan.mocjak@guava.cz"
         }
     ],
-    "require": {},
     "require-dev": {
-        "orchestra/testbench": "^7.18"
+        "orchestra/testbench": "^7.18",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
