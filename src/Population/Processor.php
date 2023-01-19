@@ -2,7 +2,7 @@
 
 namespace Guava\LaravelPopulator\Population;
 
-use Guava\LaravelPopulator\Exceptions\InvalidSampleException;
+use Guava\LaravelPopulator\Exceptions\InvalidBundleException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,7 +58,7 @@ class Processor
      *
      * @param Collection $data
      * @return Collection
-     * @throws InvalidSampleException
+     * @throws InvalidBundleException
      */
     protected function relations(Collection $data): Collection
     {
@@ -100,7 +100,7 @@ class Processor
                         return [];
                     }
 
-                    throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
+                    throw new InvalidBundleException("The relation type of {$relationName} is not supported yet.");
                 } else {
                     return [$relationName => $value];
                 }
@@ -163,7 +163,7 @@ class Processor
      * @param BelongsTo $relation
      * @param string $value
      * @return array
-     * @throws InvalidSampleException
+     * @throws InvalidBundleException
      */
     protected function belongsTo(BelongsTo $relation, string $value): array
     {
@@ -171,7 +171,7 @@ class Processor
 
         if (!$id) {
             $bundleName = $this->bundle->model::class;
-            throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsTo relation set for {$relation->getRelationName()} (value: {$value}).");
+            throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsTo relation set for {$relation->getRelationName()} (value: {$value}).");
         }
 
         return [$relation->getForeignKeyName() => $id];
@@ -183,7 +183,7 @@ class Processor
      * @param BelongsToMany $relation
      * @param array $value
      * @return void
-     * @throws InvalidSampleException
+     * @throws InvalidBundleException
      */
     protected function belongsToMany(BelongsToMany $relation, array $value): void
     {
@@ -192,7 +192,7 @@ class Processor
 
             if (!$id) {
                 $bundleName = $this->bundle->model::class;
-                throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
+                throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
             }
 
             $this->memory->set($relation->getTable(), $identifier, [
@@ -214,7 +214,7 @@ class Processor
      * @param MorphTo $relation
      * @param array $value
      * @return array
-     * @throws InvalidSampleException
+     * @throws InvalidBundleException
      */
     protected function morphTo(MorphTo $relation, array $value): array
     {
@@ -223,7 +223,7 @@ class Processor
 
         if (!$id) {
             $bundleName = $this->bundle->model::class;
-            throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value}).");
+            throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value}).");
         }
 
         return [$relation->getForeignKeyName() => $id, $relation->getMorphType() => $value[1]];
