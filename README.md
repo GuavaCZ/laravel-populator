@@ -27,7 +27,7 @@ There are three major terms that Laravel Populator introduces:
 **Records**: A record is the smallest unit and it represents a database record waiting to be populated. A record is a php file, which returns an array with `key => value` pairs describing your model / databse entry.
 
 ## Usage
-### Using the generator
+### Using the generator command
 Work in Progress
 
 ### Manual
@@ -67,15 +67,30 @@ return [
 
 That's it! When the migration is run, it will create all records from the populator's bundles.
 
-Please note that the password will not be hashed, in order to hash all passwords you can modify the Bundle like this:
+Please note that the password will not be hashed, in order to hash all passwords please refer to the documentation bellow:
+
+## Bundles
+Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every reccord.
+
+This is done by chaining additional methods described bellow:
+
+### Mutators
+You can define mutators on any of the model's attributes in order to mutate the value before it's stored in the database.
+
+For example you might want to hash all passwords:
 ```php
 Bundle::make(User::class)
     ->mutate('password', fn($value) => Hash::make($value))
 ```
-This will run call the provided callback the 'password' attribute of each record.
 
-The package offers many more customizations, please refer to the documentation below for more information.
+### Generated
+In case you want to have default or generated values for an attribute, you can chain a `generated()` method to your Bundle.
 
+A common use case might be if you for example wanted to generate a slug from from another attribute:
+```php
+Bundle::make(Post::class)
+    ->generate('slug', fn($attributes) => Str::slug($attributes['name']))
+```
 
 ## Relations
 Records can of course have relations with other relations. Currently supported relations are:
