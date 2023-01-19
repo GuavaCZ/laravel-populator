@@ -304,18 +304,18 @@ class Processor
                 }
 
                 if ($relation['relation'] === 'morphOne') {
-                    $sample = Bundle::make($relation['related']);
-                    $sample->populator = $this->bundle->populator;
+                    $bundle = Bundle::make($relation['related']);
+                    $bundle->populator = $this->bundle->populator;
 
-                    $processor = new Processor($sample);
+                    $processor = new Processor($bundle);
                     $processor->process($relation['record'], $name);
                 }
 
                 if ($relation['relation'] === MorphOneOrMany::class) {
-                    $sample = Bundle::make($relation['related']);
-                    $sample->populator = $this->bundle->populator;
+                    $bundle = Bundle::make($relation['related']);
+                    $bundle->populator = $this->bundle->populator;
 
-                    $processor = new Processor($sample);
+                    $processor = new Processor($bundle);
                     $processor->process($relation['record'], $name);
                 }
             }
