@@ -39,7 +39,7 @@ php artisan make:migration populate_initial_data
 
 Inside of the migration, you have to define your populator and it's bundles:
 ```php
-Populator::make('initial')
+Populator::make('v1')
     ->bundles([
         Bundle::make(User::class),
     ])
@@ -67,12 +67,52 @@ return [
 
 That's it! When the migration is run, it will create all records from the populator's bundles.
 
-Please note that the password will not be hashed, in order to hash all passwords please refer to the documentation below.
+Please note that the password will not be hashed, in order to hash all passwords or to learn more about all the customization options, please refer to the documentation below.
+
+## Populators
+Populators serve as a group of bundles of records that you want to populate. The reason for this kind of grouping is that during the lifetime of your application, you might want to add another batch of data to your application in mid-production. As we know, developers hate to come up with names and to avoid ending up with bundles named `users1`, `users2`, `users-new`, `yet-another-batch-of-users`, we decided to group them into populators so you only have to come up with a single name. :)
+
+In case you end up needing to seed data in mid-production, we recommend naming your populators according to your version, such as `v1.0`, `v1.1`, `v2.0` and so on.
+
+### Calling a populator
+A populator is the entry point to everything this package offers. You can call the populator from anywhere you want, but we recommend calling them from migrations, like this:
+
+```php
+Populator::make('v1')
+    ->bundles([ // Your bundles here])
+    ->call()
+```
+
+This will call your populator and all it's defined bundles (more information in the Bundles section)
+
+### Environment
+Populators can be set to be executed only on specific environments. You might most likely want to seed different data for your local environment and your production environment.
+
+You can easily do so using the `environments` method:
+```php
+Populator::make('v1')
+    ->environments(['local'])
+    ...
+    ->call()
+```
+This populator will only be executed on the local environment.
+
 
 ## Bundles
-Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every record.
+Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every record. This is done by chaining additional methods described below.
 
-This is done by chaining additional methods described below.
+Creating a bundle is as simply as this:
+```php
+Bundle::make(Model::class, 'optional-name'),
+```
+Passing a name is optional and defines the name of the directory inside the populator's directory. If omitted, the name will be auto-generated from the model's class name. For example for the model `Foo` the name will be `foo`, for the model `FooBar` it would be `foo-bar`.
+
+### Environment
+Similar to populators, you can also define specific environments for each bundle separately. To do so, chain the `environments` method on the Bundle itself:
+```php
+Bundle::make(User::class)
+    ->environments(['production'])
+```
 
 ### Mutators
 You can define mutators on any of the model's attributes in order to mutate the value before it's stored in the database.
@@ -249,11 +289,4 @@ return [
 ];
 ```
 This will automatically create two Like's with the defined attributes and a relationship to the post they have been created in.
-
-
-## Documentation
-
-
-
-[Documentation](https://linktodocumentation)
 
