@@ -24,8 +24,6 @@ class Bundle
     public array $defaults = [];
     public Populator $populator;
 
-//    protected Processor $processor;
-
     /**
      * Can be used to set up repeating samples.
      *
