@@ -4,8 +4,6 @@ namespace Guava\LaravelPopulator\Population;
 
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
-use Guava\LaravelPopulator\Exceptions\AbstractClassException;
-use ReflectionClass;
 
 /**
  * The populator is used to populate your database with the defined samples of model items.
@@ -32,15 +30,9 @@ class Populator
      * Populates the database with the defined samples.
      *
      * A good way to call this method would be from a migration file.
-     *
-     * @throws AbstractClassException
      */
     public function call(): void
     {
-        if ((new ReflectionClass(static::class))->isAbstract()) {
-            throw new AbstractClassException('Cannot call abstract Populator. You need to create and call an instance of the Populator class.');
-        }
-
         $this->handle();
     }
 
