@@ -67,12 +67,12 @@ return [
 
 That's it! When the migration is run, it will create all records from the populator's bundles.
 
-Please note that the password will not be hashed, in order to hash all passwords please refer to the documentation bellow:
+Please note that the password will not be hashed, in order to hash all passwords please refer to the documentation below.
 
 ## Bundles
-Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every reccord.
+Bundles are like blueprints for all your records, they define default attributes or common modifiers so you don't need to repeat them in every record.
 
-This is done by chaining additional methods described bellow:
+This is done by chaining additional methods described below.
 
 ### Mutators
 You can define mutators on any of the model's attributes in order to mutate the value before it's stored in the database.
@@ -102,12 +102,13 @@ Bundle::make(Post::class)
 ```
 
 ## Relations
-Records can of course have relations with other relations. Currently supported relations are:
+Records can of course have relations with other records. Currently supported relations are:
 
-- one to one (`belongsTo`) and it's inverse (`hasOne`)
-- one to many (`belongsTo`)
+- one to one and it's inverse
+- one to many and it's inverse
 - many to many (`belongsToMany`)
-- polymorphic one to many (`morphTo`) and it's inverse (`morphMany`)
+- polymorphic one to one and it's inverse
+- polymorphic one to many and it's inverse (`morphMany`)
 
 ### One to One
 Let's say we have a `User` model that has one `Address` relation. You can define the relation in the `Address` bundle like this:
