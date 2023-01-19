@@ -19,6 +19,12 @@ class Populator
 
     public array $bundles = [];
 
+    /**
+     * Defines all bundles of the populator.
+     *
+     * @param array $bundles
+     * @return $this
+     */
     public function bundles(array $bundles): static
     {
         $this->bundles = $bundles;
@@ -54,10 +60,19 @@ class Populator
         }
     }
 
+    /**
+     * Creates an instance of the class.
+     */
     private function __construct(string $name) {
         $this->name = $name;
     }
 
+    /**
+     * Static factory to create an instance of the class.
+     *
+     * @param Bundle $bundle
+     * @return static
+     */
     public static function make(string $name): static
     {
         return new static($name);
