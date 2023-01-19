@@ -20,6 +20,7 @@ class Bundle
     public string $table;
 
     public array $mutators = [];
+    public array $defaults = [];
     public Populator $populator;
 
 //    protected Processor $processor;
@@ -73,6 +74,20 @@ class Bundle
     public function mutate(string $attribute, Closure $closure): static
     {
         $this->mutators[$attribute] = $closure;
+
+        return $this;
+    }
+
+    /**
+     * Adds default data to the specified attribute.
+     *
+     * @param string $attribute Attribute for default data.
+     * @param mixed $closure Callback to run on the attribute.
+     * @return $this
+     */
+    public function default(string $attribute, mixed $closure): static
+    {
+        $this->defaults[$attribute] = $closure;
 
         return $this;
     }

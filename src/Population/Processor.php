@@ -42,6 +42,7 @@ class Processor
 
         $this->data->pipeThrough([
             $this->relations(...),
+            $this->defaults(...),
             $this->mutate(...),
             $this->insert(...),
             $this->related(...),
@@ -234,15 +235,35 @@ class Processor
     protected function mutate(Collection $data): Collection
     {
         return $data
+            ->when(fn() => !empty($this->bundle->mutators),
+                fn(Collection $collection) => $collection->map(function ($value, $key) {
+                    return Arr::exists($this->bundle->mutators, $key) ? $this->bundle->mutators[$key]($value) : $value;
+                }));
+    }
+
+    /**
+     * Mutes the attributes of the model using the defined mutators.
+     *
+     * @param Collection $data
+     * @return Collection
+     */
+    protected function defaults(Collection $data): Collection
+    {
+        return $data
             ->when($this->bundle->model->usesTimestamps(),
                 fn(Collection $collection) => $collection->merge([
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]))
-            ->when(fn() => !empty($this->bundle->mutators),
-                fn(Collection $collection) => $collection->map(function ($value, $key) {
-                    return Arr::exists($this->bundle->mutators, $key) ? $this->bundle->mutators[$key]($value) : $value;
-                }));
+            ->when(fn() => !empty($this->bundle->defaults),
+                fn(Collection $collection) => $collection->merge(
+                    collect($this->bundle->defaults)->map(fn($value) => is_callable($value) ? $value() : $value)
+                ));
+//                fn(Collection $collection) => $collection->merge(function ($value, $key) {
+//                    return Arr::exists($this->bundle->defaults, $key) ?
+//                        (is_callable($this->bundle->defaults[$key]) ? $this->bundle->defaults[$key]() : $this->bundle->defaults[$key])
+//                        : $value;
+//                }));
     }
 
     /**
