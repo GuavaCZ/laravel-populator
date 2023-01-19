@@ -101,6 +101,24 @@ Bundle::make(Post::class)
     ->generate('slug', fn($attributes) => Str::slug($attributes['name']))
 ```
 
+### Records
+If you only have a small amount of records to create, it might be cumbersome to create the whole directory structure. For these cases you can create them from inside your migration using the `record` and `records` methods.
+
+For example, to quickly create an admin account, you could do the following:
+```php
+...
+Bundle::make(User::class)
+    ->mutate('password', fn($value) => Hash::make($value))
+    ->records([
+        'admin' => [
+            'name' => 'Administrator',
+            'email' => 'admin@example.tld',
+            'password' => 'admin123',
+        ],
+    ]);
+...
+```
+
 ## Relations
 Records can of course have relations with other records. Currently supported relations are:
 
