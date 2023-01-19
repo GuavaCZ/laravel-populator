@@ -83,6 +83,15 @@ Bundle::make(User::class)
     ->mutate('password', fn($value) => Hash::make($value))
 ```
 
+### Default
+You can define default attributes for all records if they are not set. This is useful if you have a lot of records with the same attributes.
+
+For example, you might want to add `guard_name` to all permissions ([spatie/laravel-permission](https://github.com/spatie/laravel-permission)):
+```php
+Bundle::make(Permission::class)
+    ->default('guard_name', 'web'),
+```
+
 ### Generated
 In case you want to have default or generated values for an attribute, you can chain a `generated()` method to your Bundle.
 
