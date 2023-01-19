@@ -28,6 +28,7 @@ There are three major terms that Laravel Populator introduces:
 
 ## Usage
 ### Using the generator
+Work in Progress
 
 ### Manual
 First you need to create a migration using:
@@ -72,3 +73,104 @@ Bundle::make(User::class)
     ->mutate('password', fn($value) => Hash::make($value))
 ```
 This will run call the provided callback the 'password' attribute of each record.
+
+The package offers many more customizations, please refer to the documentation below for more information.
+
+
+## Relations
+Records can of course have relations with other relations. Currently supported relations are:
+
+- one to many (`belongsTo`)
+- many to many (`belongsToMany`)
+- polymorphic one to many (`morphTo`) and it's inverse (`morphMany`)
+
+### One to Many
+Imagine we had a `Posts` bundle that had a one to many relation to the `author` (John Doe) created in the first example. There are three options to define the relation.
+
+Using the record's key (the filename we chose):
+```php
+<?php
+return [
+    'name' => 'Example post',
+    'slug' => 'example-post',
+    'author' => 'john-doe',
+];
+```
+Keep in mind that the above example works only for records created within the same populator, as the key is stored in temporary memory only.
+
+Using the primary key:
+```php
+<?php
+return [
+    'name' => 'Example post',
+    'slug' => 'example-post',
+    'author' => 1,
+];
+```
+
+Using a (preferably) unique key:
+```php
+<?php
+return [
+    'name' => 'Example post',
+    'slug' => 'example-post',
+    'author' => 'email:john.doe@example.tld',
+];
+```
+
+It's up to you which way you prefer.
+
+### Many to Many
+If we wanted to modify the above example and also add a `many to many` relation to `tags`, it's as simple as this:
+```php
+<?php
+return [
+    'name' => 'Example post',
+    'slug' => 'example-post',
+    'author' => 1,
+    'tags' => ['technology', 'design', 'off-topic']
+];
+```
+
+### Polymorphic One to Many
+Now imagine we had a `Comment` model which has a polymorphic relation to the `Post` model.
+
+Adding such a relationship is similar to a belongs to relation, but we need to pass an array with the key/primary key AND the class of the morph.
+```php
+<?php
+return [
+    'name' => 'A useful comment',
+    'author' => 1,
+    'post' => ['example-post', Post::class],
+];
+```
+
+
+### Polymorphic One to Many (Inverse)
+Last but not least, assuming we have `Like` model with a polymorphic relation to our Post model. Let's take another look at our `example-post` record and extend it one last time by adding an inverse `likes` relation.
+```php
+<?php
+return [
+    'name' => 'Example post',
+    'slug' => 'example-post',
+    'author' => 1,
+    'tags' => ['technology', 'design', 'off-topic'],
+    'likes' => [
+        [
+            'user' => 'john.doe@example.tld',
+        ],
+        [
+            'user' => 'jennifer.doe@example.tld',
+        ]
+    ]
+];
+```
+This will automatically create two Like's with the defined attributes and a relationship to the post they have been created in.
+
+
+## Documentation
+
+
+
+[Documentation](https://linktodocumentation)
+
