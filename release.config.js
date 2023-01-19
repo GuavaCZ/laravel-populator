@@ -26,6 +26,9 @@ module.exports = {
         ["@semantic-release/release-notes-generator", {
             "preset": "conventionalcommits"
         }],
+        ["@semantic-release/github", {
+            "assets": []
+        }],
         ["@semantic-release/changelog",
             {
                 "changelogFile": "CHANGELOG.md"
