@@ -100,12 +100,11 @@ class Processor
                         return [];
                     }
 
-                        throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
-                    } else {
-                        return [$relationName => $value];
-                    }
-                })
-            ;
+                    throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
+                } else {
+                    return [$relationName => $value];
+                }
+            });
     }
 
     /**
