@@ -63,51 +63,50 @@ class Processor
     protected function relations(Collection $data): Collection
     {
         return $data
-                ->mapWithKeys(function ($value, $relationName) {
-                    if ($this->bundle->model->isRelation($relationName)) {
-                        $relation = $this->bundle->model->$relationName();
+            ->mapWithKeys(function ($value, $relationName) {
+                if ($this->bundle->model->isRelation($relationName)) {
+                    $relation = $this->bundle->model->$relationName();
 
-                        if ($relation instanceof MorphTo) {
-                            return $this->morphTo($relation, $value);
-                        }
-
-                        if ($relation instanceof MorphOne) {
-                            $this->morphOne($relation, $value);
-                            return [];
-                        }
-
-                        if ($relation instanceof MorphMany) {
-                            $this->morphMany($relation, $value);
-                            return [];
-                        }
-
-                        if ($relation instanceof HasOne) {
-                            $this->hasOne($relation, $value);
-                            return [];
-                        }
-
-                        if ($relation instanceof HasMany) {
-                            $this->hasMany($relation, $value);
-                            return [];
-                        }
-
-                        if ($relation instanceof BelongsTo) {
-                            return $this->belongsTo($relation, $value);
-                        }
-
-                        if ($relation instanceof BelongsToMany) {
-                            $this->belongsToMany($relation, $value);
-                            return [];
-                        }
-
-                        throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
-                    } else {
-                        return [$relationName => $value];
+                    if ($relation instanceof MorphTo) {
+                        return $this->morphTo($relation, $value);
                     }
 
-                    throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
-                })
-            ;
+                    if ($relation instanceof MorphOne) {
+                        $this->morphOne($relation, $value);
+                        return [];
+                    }
+
+                    if ($relation instanceof MorphMany) {
+                        $this->morphMany($relation, $value);
+                        return [];
+                    }
+
+                    if ($relation instanceof HasOne) {
+                        $this->hasOne($relation, $value);
+                        return [];
+                    }
+
+                    if ($relation instanceof HasMany) {
+                        $this->hasMany($relation, $value);
+                        return [];
+                    }
+
+                    if ($relation instanceof BelongsTo) {
+                        return $this->belongsTo($relation, $value);
+                    }
+
+                    if ($relation instanceof BelongsToMany) {
+                        $this->belongsToMany($relation, $value);
+                        return [];
+                    }
+
+                    throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
+                } else {
+                    return [$relationName => $value];
+                }
+
+                throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
+            });
     }
 
     protected function hasOne(HasOne $relation, array $record): void
@@ -210,8 +209,6 @@ class Processor
     }
 
 
-
-
     /**
      * Processes the belongs to relationship and sets the foreign key.
      *
@@ -274,7 +271,7 @@ class Processor
     }
 
     /**
-     * Mutes the attributes of the model using the defined mutators.
+     * Adds default values for attributes that are not set.
      *
      * @param Collection $data
      * @return Collection
@@ -289,7 +286,11 @@ class Processor
                 ]))
             ->when(fn() => !empty($this->bundle->defaults),
                 fn(Collection $collection) => $collection->merge(
-                    collect($this->bundle->defaults)->map(fn($value) => is_callable($value) ? $value() : $value)
+                    collect($this->bundle->defaults)
+                        ->filter(fn($item, $key) => !$data->has($key))
+                        ->map(function ($value) {
+                            return is_callable($value) ? $value() : $value;
+                        })
                 ));
 //                fn(Collection $collection) => $collection->merge(function ($value, $key) {
 //                    return Arr::exists($this->bundle->defaults, $key) ?
@@ -362,7 +363,8 @@ class Processor
         return $data;
     }
 
-    protected function getPrimaryIdFromMemory(Model $model, string $identifier): int|string|null {
+    protected function getPrimaryIdFromMemory(Model $model, string $identifier): int|string|null
+    {
         $id = $this->bundle->populator->memory->get($model::class, $identifier);
 
         // Load from memory
