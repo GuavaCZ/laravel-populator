@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphOneOrMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -62,8 +64,8 @@ class Processor
                     if ($this->bundle->model->isRelation($relationName)) {
                         $relation = $this->bundle->model->$relationName();
 
-                        if ($relation instanceof HasOne) {
-                            $this->hasOne($relation, $value);
+                        if ($relation instanceof MorphOne) {
+                            $this->morphOne($relation, $value);
                             return [];
                         }
 
@@ -73,6 +75,11 @@ class Processor
 
                         if ($relation instanceof MorphMany) {
                             $this->morphMany($relation, $value);
+                            return [];
+                        }
+
+                        if ($relation instanceof HasOne) {
+                            $this->hasOne($relation, $value);
                             return [];
                         }
 
@@ -105,25 +112,6 @@ class Processor
                 $relationName => $this->name,
             ])
         ]);
-//        foreach ($value as $identifier) {
-//            $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $identifier);
-//
-//            if (!$id) {
-//                $sampleName = $this->bundle->model::class;
-//                throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
-//            }
-//
-//            $this->memory->set($relation->getRelated()->getTable(), $this->name, [
-//                'relation' => 'hasOne',
-//                'foreign' => [
-//                    'pivot_key' => $relation->getForeignPivotKeyName()
-//                ],
-//                'related' => [
-//                    'pivot_key' => $relation->getRelatedPivotKeyName(),
-//                    'id' => $id,
-//                ],
-//            ]);
-//        }
     }
 
     /**
@@ -197,6 +185,22 @@ class Processor
     }
 
 
+
+
+    /**
+     * Processes the belongs to relationship and sets the foreign key.
+     *
+     * @param MorphOne $relation
+     * @param array $record
+     * @return void
+     */
+    protected function morphOne(MorphOneOrMany $relation, array $record): void
+    {
+        $this->morphOneOrMany($relation, [
+            $record,
+        ]);
+    }
+
     /**
      * Processes the belongs to relationship and sets the foreign key.
      *
@@ -206,20 +210,24 @@ class Processor
      */
     protected function morphMany(MorphMany $relation, array $items): void
     {
+        $this->morphOneOrMany($relation, $items);
+    }
 
+    protected function morphOneOrMany(MorphOneOrMany $relation, array $records): void
+    {
         $index = 0;
-        foreach ($items as $item) {
+        foreach ($records as $record) {
             $morphName = Str::beforeLast($relation->getForeignKeyName(), '_');
-            $item = collect($item)->merge([
+            $record = collect($record)->merge([
                 $morphName => [$this->name, $relation->getMorphClass()],
             ])->toArray();
 
             $otherMorphName = Str::before($relation->getQualifiedForeignKeyName(), '.');
 
             $this->memory->set($relation->getRelated()->getTable(), "{$this->name}_{$otherMorphName}_{$index}", [
-                'relation' => 'morphMany',
+                'relation' => $relation::class,
                 'related' => $relation->getRelated()::class,
-                'model' => $item,
+                'record' => $record,
             ]);
             $index++;
         }
@@ -295,12 +303,20 @@ class Processor
                         ]);
                 }
 
-                if ($relation['relation'] === 'morphMany') {
+                if ($relation['relation'] === 'morphOne') {
                     $sample = Bundle::make($relation['related']);
                     $sample->populator = $this->bundle->populator;
 
                     $processor = new Processor($sample);
-                    $processor->process($relation['model'], $name);
+                    $processor->process($relation['record'], $name);
+                }
+
+                if ($relation['relation'] === MorphOneOrMany::class) {
+                    $sample = Bundle::make($relation['related']);
+                    $sample->populator = $this->bundle->populator;
+
+                    $processor = new Processor($sample);
+                    $processor->process($relation['record'], $name);
                 }
             }
 
