@@ -104,7 +104,7 @@ Bundle::make(Post::class)
 ## Relations
 Records can of course have relations with other relations. Currently supported relations are:
 
-- one to one (`belongsTo`)
+- one to one (`belongsTo`) and it's inverse (`hasOne`)
 - one to many (`belongsTo`)
 - many to many (`belongsToMany`)
 - polymorphic one to many (`morphTo`) and it's inverse (`morphMany`)
