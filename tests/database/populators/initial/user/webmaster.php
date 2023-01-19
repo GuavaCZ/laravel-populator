@@ -2,12 +2,12 @@
 
 return [
     'name' => 'Webmaster',
-    'email' => 'webmaster@guava.cz',
-    'password' => 'admin123',
+    'email' => 'webmaster@domail.tld',
+    'password' => 'secretPassword',
     'address' => [
         'street' => 'Example street',
         'city' => 'Example city',
         'zip' => '12345',
-        'state' => 'Czech Republic',
+        'state' => 'Example state',
     ]
 ];

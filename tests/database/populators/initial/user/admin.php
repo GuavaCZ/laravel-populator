@@ -2,6 +2,6 @@
 
 return [
     'name' => 'Administrator',
-    'email' => 'admin@guava.cz',
-    'password' => 'admin123',
+    'email' => 'admin@domail.tld',
+    'password' => 'secretPassword',
 ];
