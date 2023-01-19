@@ -104,12 +104,17 @@ class Processor
                     } else {
                         return [$relationName => $value];
                     }
-
-                    throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
                 })
             ;
     }
 
+    /**
+     * Handles the hasOne relation of the processed record.
+     *
+     * @param HasOne $relation
+     * @param array $record
+     * @return void
+     */
     protected function hasOne(HasOne $relation, array $record): void
     {
         $this->hasOneOrMany($relation, [
@@ -117,11 +122,25 @@ class Processor
         ]);
     }
 
+    /**
+     * Handles the hasMany relation of the processed record.
+     *
+     * @param HasMany $relation
+     * @param array $records
+     * @return void
+     */
     protected function hasMany(HasMany $relation, array $records): void
     {
         $this->hasOneOrMany($relation, $records);
     }
 
+    /**
+     * Handles the hasOneOrMany relation of the procesed record.
+     *
+     * @param HasOneOrMany $relation
+     * @param array $records
+     * @return void
+     */
     protected function hasOneOrMany(HasOneOrMany $relation, array $records): void
     {
         $index = 0;
@@ -165,6 +184,7 @@ class Processor
      * @param BelongsToMany $relation
      * @param array $value
      * @return void
+     * @throws InvalidSampleException
      */
     protected function belongsToMany(BelongsToMany $relation, array $value): void
     {
@@ -190,11 +210,12 @@ class Processor
     }
 
     /**
-     * Processes the belongs to relationship and sets the foreign key.
+     * Processes the morph to relationship and sets the foreign key.
      *
      * @param MorphTo $relation
      * @param array $value
      * @return array
+     * @throws InvalidSampleException
      */
     protected function morphTo(MorphTo $relation, array $value): array
     {
@@ -209,11 +230,8 @@ class Processor
         return [$relation->getForeignKeyName() => $id, $relation->getMorphType() => $value[1]];
     }
 
-
-
-
     /**
-     * Processes the belongs to relationship and sets the foreign key.
+     * Processes the morph one relationship and sets the foreign key.
      *
      * @param MorphOne $relation
      * @param array $record
@@ -227,7 +245,7 @@ class Processor
     }
 
     /**
-     * Processes the belongs to relationship and sets the foreign key.
+     * Processes the morph many relationship and sets the foreign key.
      *
      * @param MorphMany $relation
      * @param array $items
@@ -238,6 +256,13 @@ class Processor
         $this->morphOneOrMany($relation, $items);
     }
 
+    /**
+     * Processes the morph one or many relationship and sets the foreign key.
+     *
+     * @param MorphOneOrMany $relation
+     * @param array $records
+     * @return void
+     */
     protected function morphOneOrMany(MorphOneOrMany $relation, array $records): void
     {
         $index = 0;
@@ -291,11 +316,6 @@ class Processor
                 fn(Collection $collection) => $collection->merge(
                     collect($this->bundle->defaults)->map(fn($value) => is_callable($value) ? $value() : $value)
                 ));
-//                fn(Collection $collection) => $collection->merge(function ($value, $key) {
-//                    return Arr::exists($this->bundle->defaults, $key) ?
-//                        (is_callable($this->bundle->defaults[$key]) ? $this->bundle->defaults[$key]() : $this->bundle->defaults[$key])
-//                        : $value;
-//                }));
     }
 
     /**
