@@ -1,5 +1,7 @@
 
 # Laravel Populator
+![Packagist Version](https://img.shields.io/packagist/v/guava/laravel-populator?style=for-the-badge)
+
 
 Laravel populator's goal is to provide an unified way to populate your database with predefined data, while keeping your migrations intact.
 
