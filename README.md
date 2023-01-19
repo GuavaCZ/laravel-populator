@@ -28,6 +28,44 @@ There are three major terms that Laravel Populator introduces:
 
 **Records**: A record is the smallest unit and it represents a database record waiting to be populated. A record is a php file, which returns an array with `key => value` pairs describing your model / databse entry.
 
+## Example
+`2023_01_20_203807_populate_initial_data.php`:
+
+```php
+
+return new class extends Migration {
+
+    public function up() {
+        Populator::make('initial') // // bundles are located in /database/populators/initial/
+            ->environments(['local', 'testing'])
+            ->bundles([
+                Bundle::make(User::class)
+                    ->mutate('password', fn($value) => Hash::make($value))
+                    ->records([
+                        'admin' => [
+                            'name' => 'Administrator',
+                            'email' => 'admin@guava.cz',
+                            'password' => 'admin123',
+                        ],
+                    ]),
+                    
+                Bundle::make(Tag::class, 'my-tags'), // records are located in /database/populators/initial/my-tags/
+                    
+                Bundle::make(Post::class) // records are located in /database/populators/initial/post/
+                    ->generate('slug', fn(array $attributes) => Str::slug($attributes['name'])),
+               
+                Bundle::make(Permission::class) // records are located in /database/populators/initial/permission/
+                    ->default('guard_name', 'web'),
+
+                Bundle::make(Role::class) // records are located in /database/populators/initial/role/
+                    ->default('guard_name', 'web'),
+                    
+            ]);
+    }
+    
+}
+```
+
 ## Usage
 ### Using the generator command
 Work in Progress
