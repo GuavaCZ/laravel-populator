@@ -139,8 +139,8 @@ class Processor
         $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $value);
 
         if (!$id) {
-            $sampleName = $this->bundle->model::class;
-            throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsTo relation set for {$relation->getRelationName()} (value: {$value}).");
+            $bundleName = $this->bundle->model::class;
+            throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsTo relation set for {$relation->getRelationName()} (value: {$value}).");
         }
 
         return [$relation->getForeignKeyName() => $id];
@@ -159,8 +159,8 @@ class Processor
             $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $identifier);
 
             if (!$id) {
-                $sampleName = $this->bundle->model::class;
-                throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
+                $bundleName = $this->bundle->model::class;
+                throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
             }
 
             $this->memory->set($relation->getTable(), $identifier, [
@@ -189,8 +189,8 @@ class Processor
         $id = $this->getPrimaryIdFromMemory(new $value[1], $value[0]);
 
         if (!$id) {
-            $sampleName = $this->bundle->model::class;
-            throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
+            $bundleName = $this->bundle->model::class;
+            throw new InvalidSampleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value}).");
         }
 
         return [$relation->getForeignKeyName() => $id, $relation->getMorphType() => $value[1]];
@@ -296,10 +296,10 @@ class Processor
                 }
 
                 if ($relation['relation'] === 'morphMany') {
-                    $sample = Bundle::make($relation['related']);
-                    $sample->populator = $this->bundle->populator;
+                    $bundle = Bundle::make($relation['related']);
+                    $bundle->populator = $this->bundle->populator;
 
-                    $processor = new Processor($sample);
+                    $processor = new Processor($bundle);
                     $processor->process($relation['model'], $name);
                 }
             }
@@ -336,21 +336,21 @@ class Processor
     /**
      * Creates an instance of the class.
      */
-    private function __construct(Bundle $sample)
+    private function __construct(Bundle $bundle)
     {
-        $this->bundle = $sample;
+        $this->bundle = $bundle;
         $this->memory = new Memory();
     }
 
     /**
      * Static factory to create an instance of the class.
      *
-     * @param Bundle $sample
+     * @param Bundle $bundle
      * @return static
      */
-    public static function make(Bundle $sample): static
+    public static function make(Bundle $bundle): static
     {
-        return new static($sample);
+        return new static($bundle);
     }
 
 }
