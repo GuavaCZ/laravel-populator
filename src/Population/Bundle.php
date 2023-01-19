@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 /**
  * The sample class serves as a blueprint for the model it creates.
  */
-class Sample
+class Bundle
 {
     use HasName;
     use HasEnvironments;
@@ -44,7 +44,7 @@ class Sample
 
         $this->populator = $populator;
 
-        $path = database_path("populators/{$populator->getName()}/{$this->getName($this->model::class)}");
+        $path = database_path("populators/{$populator->getName($populator->name)}/{$this->getName($this->model::class)}");
 
         collect(File::files($path))
             ->each(function (\SplFileInfo $file) {

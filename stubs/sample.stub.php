@@ -1,9 +1,9 @@
 <?php
 namespace DummyNamespace;
 
-use Guava\LaravelPopulator\Population\Sample;
+use Guava\LaravelPopulator\Population\Bundle;
 
-class DummyClass extends Sample
+class DummyClass extends Bundle
 {
 
     public function setup(): void {

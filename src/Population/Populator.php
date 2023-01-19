@@ -12,19 +12,21 @@ use ReflectionClass;
  *
  * @package Guava\LaravelPopulator
  */
-abstract class Populator
+class Populator
 {
     use HasName;
     use HasEnvironments;
 
     public Memory $memory;
 
-    /**
-     * Define the samples you want to populate in here.
-     *
-     * @return Sample[]
-     */
-    public abstract function samples(): array;
+    public array $bundles = [];
+
+    public function bundles(array $bundles): static
+    {
+        $this->bundles = $bundles;
+
+        return $this;
+    }
 
     /**
      * Populates the database with the defined samples.
@@ -33,13 +35,13 @@ abstract class Populator
      *
      * @throws AbstractClassException
      */
-    public static function call(): void
+    public function call(): void
     {
         if ((new ReflectionClass(static::class))->isAbstract()) {
             throw new AbstractClassException('Cannot call abstract Populator. You need to create and call an instance of the Populator class.');
         }
 
-        (new static)->handle();
+        $this->handle();
     }
 
     /**
@@ -55,9 +57,18 @@ abstract class Populator
 
         $this->memory = new Memory();
 
-        foreach ($this->samples() as $sample) {
+        foreach ($this->bundles as $sample) {
             $sample->handle($this);
         }
+    }
+
+    private function __construct(string $name) {
+        $this->name = $name;
+    }
+
+    public static function make(string $name): static
+    {
+        return new static($name);
     }
 
 }

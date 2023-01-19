@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -19,7 +18,7 @@ use Illuminate\Support\Str;
  */
 class Processor
 {
-    protected Sample $sample;
+    protected Bundle $bundle;
 
     protected \SplFileInfo $file;
     protected Collection $data;
@@ -58,10 +57,9 @@ class Processor
     protected function relations(Collection $data): Collection
     {
         return $data
-//            ->pipe(fn($collection) => $collection
                 ->mapWithKeys(function ($value, $relationName) {
-                    if ($this->sample->model->isRelation($relationName)) {
-                        $relation = $this->sample->model->$relationName();
+                    if ($this->bundle->model->isRelation($relationName)) {
+                        $relation = $this->bundle->model->$relationName();
 
                         if ($relation instanceof MorphTo) {
                             return $this->morphTo($relation, $value);
@@ -102,7 +100,7 @@ class Processor
         $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $value);
 
         if (!$id) {
-            $sampleName = $this->sample->model::class;
+            $sampleName = $this->bundle->model::class;
             throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsTo relation set for {$relation->getRelationName()} (value: {$value}).");
         }
 
@@ -122,7 +120,7 @@ class Processor
             $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $identifier);
 
             if (!$id) {
-                $sampleName = $this->sample->model::class;
+                $sampleName = $this->bundle->model::class;
                 throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
             }
 
@@ -152,7 +150,7 @@ class Processor
         $id = $this->getPrimaryIdFromMemory(new $value[1], $value[0]);
 
         if (!$id) {
-            $sampleName = $this->sample->model::class;
+            $sampleName = $this->bundle->model::class;
             throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
         }
 
@@ -197,14 +195,14 @@ class Processor
     protected function mutate(Collection $data): Collection
     {
         return $data
-            ->when($this->sample->model->usesTimestamps(),
+            ->when($this->bundle->model->usesTimestamps(),
                 fn(Collection $collection) => $collection->merge([
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]))
-            ->when(fn() => !empty($this->sample->mutators),
+            ->when(fn() => !empty($this->bundle->mutators),
                 fn(Collection $collection) => $collection->map(function ($value, $key) {
-                    return Arr::exists($this->sample->mutators, $key) ? $this->sample->mutators[$key]($value) : $value;
+                    return Arr::exists($this->bundle->mutators, $key) ? $this->bundle->mutators[$key]($value) : $value;
                 }));
     }
 
@@ -216,15 +214,15 @@ class Processor
      */
     protected function insert(Collection $data): Collection
     {
-        $id = DB::table($this->sample->table)
+        $id = DB::table($this->bundle->table)
             ->insertGetId($data->toArray());
 
         // Get the ID if it's not auto incrementing
-        if (!$this->sample->model->getIncrementing()) {
-            $id = $data->get($this->sample->model->getKeyName());
+        if (!$this->bundle->model->getIncrementing()) {
+            $id = $data->get($this->bundle->model->getKeyName());
         }
 
-        $this->sample->populator->memory->set($this->sample->model::class, $this->name, $id);
+        $this->bundle->populator->memory->set($this->bundle->model::class, $this->name, $id);
 
         return $data;
     }
@@ -237,7 +235,7 @@ class Processor
      */
     protected function related(Collection $data): Collection
     {
-        $id = $this->sample->populator->memory->get($this->sample->model::class, $this->name);
+        $id = $this->bundle->populator->memory->get($this->bundle->model::class, $this->name);
 
         foreach ($this->memory->all() as $table => $relations) {
 
@@ -252,8 +250,8 @@ class Processor
                 }
 
                 if ($relation['relation'] === 'morphMany') {
-                    $sample = Sample::make($relation['related']);
-                    $sample->populator = $this->sample->populator;
+                    $sample = Bundle::make($relation['related']);
+                    $sample->populator = $this->bundle->populator;
 
                     $processor = new Processor($sample);
                     $processor->process($relation['model'], $name);
@@ -266,7 +264,7 @@ class Processor
     }
 
     protected function getPrimaryIdFromMemory(Model $model, string $identifier): int|string|null {
-        $id = $this->sample->populator->memory->get($model::class, $identifier);
+        $id = $this->bundle->populator->memory->get($model::class, $identifier);
 
         // Load from memory
         if ($id) {
@@ -292,19 +290,19 @@ class Processor
     /**
      * Creates an instance of the class.
      */
-    private function __construct(Sample $sample)
+    private function __construct(Bundle $sample)
     {
-        $this->sample = $sample;
+        $this->bundle = $sample;
         $this->memory = new Memory();
     }
 
     /**
      * Static factory to create an instance of the class.
      *
-     * @param Sample $sample
+     * @param Bundle $sample
      * @return static
      */
-    public static function make(Sample $sample): static
+    public static function make(Bundle $sample): static
     {
         return new static($sample);
     }
