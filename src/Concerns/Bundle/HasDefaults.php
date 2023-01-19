@@ -10,7 +10,7 @@ trait HasDefaults
     /**
      * Adds default data to the specified attribute.
      *
-     * @param string $attribute Attribute for default data.
+     * @param string $attribute Name of the attribute.
      * @param mixed $closure Callback to run on the attribute.
      * @return $this
      */
