@@ -19,6 +19,7 @@ class Bundle
     public Model $model;
     public string $table;
 
+    public array $records = [];
     public array $mutators = [];
     public array $defaults = [];
     public Populator $populator;
@@ -44,6 +45,17 @@ class Bundle
         }
 
         $this->populator = $populator;
+
+        if (!empty($this->records)) {
+            collect($this->records)
+                ->each(function (array $record, $key) {
+                    $modelName = $this->model::class;
+                    Processor::make($this)
+                        ->process($record, is_int($key) ? "{$modelName}-$key" : $key);
+                });
+
+            return;
+        }
 
         $path = database_path("populators/{$populator->getName($populator->name)}/{$this->getName($this->model::class)}");
 
@@ -88,6 +100,33 @@ class Bundle
     public function default(string $attribute, mixed $closure): static
     {
         $this->defaults[$attribute] = $closure;
+
+        return $this;
+    }
+
+    /**
+     * Adds a record to the bundle for population.
+     *
+     * @param string $key Key to access the record by from other records.
+     * @param array|Closure $record Data to populate the record with or closure returning the data.
+     * @return static
+     */
+    public function record(string $key, array|Closure $record): static
+    {
+        $this->records[$key] = is_callable($record) ? $record() : $record;
+
+        return $this;
+    }
+
+    /**
+     * Adds an array of records to the bundle for population.
+     *
+     * @param array|Closure $records Records to populate the bundle with or closure returning the records.
+     * @return static
+     */
+    public function records(array|Closure $records): static
+    {
+        $this->records = is_callable($records) ? $records() : $records;
 
         return $this;
     }
