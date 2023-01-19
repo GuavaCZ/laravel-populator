@@ -6,6 +6,7 @@ use Guava\LaravelPopulator\Exceptions\InvalidSampleException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
@@ -61,6 +62,11 @@ class Processor
                     if ($this->bundle->model->isRelation($relationName)) {
                         $relation = $this->bundle->model->$relationName();
 
+                        if ($relation instanceof HasOne) {
+                            $this->hasOne($relation, $value);
+                            return [];
+                        }
+
                         if ($relation instanceof MorphTo) {
                             return $this->morphTo($relation, $value);
                         }
@@ -78,6 +84,8 @@ class Processor
                             $this->belongsToMany($relation, $value);
                             return [];
                         }
+
+                        throw new InvalidSampleException("The relation type of {$relationName} is not supported yet.");
                     } else {
                         return [$relationName => $value];
                     }
@@ -85,6 +93,37 @@ class Processor
                     throw new InvalidSampleException('Relations are misconfigured in ' . $this->file->getFilename());
                 })
             ;
+    }
+
+    protected function hasOne(HasOne $relation, array $value): void {
+        $relationName = Str::beforeLast($relation->getForeignKeyName(), '_');
+
+        $this->memory->set($relation->getRelated()->getTable(), "$this->name-$relationName", [
+            'relation' => 'hasOne',
+            'related' => $relation->getRelated()::class,
+            'record' => array_merge($value, [
+                $relationName => $this->name,
+            ])
+        ]);
+//        foreach ($value as $identifier) {
+//            $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $identifier);
+//
+//            if (!$id) {
+//                $sampleName = $this->bundle->model::class;
+//                throw new InvalidSampleException("Item {$this->name} from Sample {$sampleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
+//            }
+//
+//            $this->memory->set($relation->getRelated()->getTable(), $this->name, [
+//                'relation' => 'hasOne',
+//                'foreign' => [
+//                    'pivot_key' => $relation->getForeignPivotKeyName()
+//                ],
+//                'related' => [
+//                    'pivot_key' => $relation->getRelatedPivotKeyName(),
+//                    'id' => $id,
+//                ],
+//            ]);
+//        }
     }
 
     /**
@@ -240,6 +279,13 @@ class Processor
         foreach ($this->memory->all() as $table => $relations) {
 
             foreach ($relations as $name => $relation) {
+                if ($relation['relation'] === 'hasOne') {
+                    $bundle = Bundle::make($relation['related']);
+                    $bundle->populator = $this->bundle->populator;
+
+                    $processor = new Processor($bundle);
+                    $processor->process($relation['record'], $name);
+                }
 
                 if ($relation['relation'] === 'belongsToMany') {
                     DB::table($table)
