@@ -290,10 +290,3 @@ return [
 ```
 This will automatically create two Like's with the defined attributes and a relationship to the post they have been created in.
 
-
-## Documentation
-
-
-
-[Documentation](https://linktodocumentation)
-
