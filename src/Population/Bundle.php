@@ -46,6 +46,11 @@ class Bundle
 
         $path = database_path("populators/{$populator->getName($populator->name)}/{$this->getName($this->model::class)}");
 
+        if (!File::exists($path)) {
+            // TODO: write to CLI
+            return;
+        }
+
         collect(File::files($path))
             ->each(function (\SplFileInfo $file) {
                 $data = include $file->getPathname();
