@@ -124,7 +124,7 @@ return [
 ```
 
 ### One to One (Inverse)
-Let's say we have a `User` model that has one `Address` relation. You can create an `Address` inside the `User`:
+Let's say we have a `User` model that has one `Address` relation. You can create an `Address` from the `User` record:
 ```php
 <?php
 return [
