@@ -167,7 +167,7 @@ class Processor
      */
     protected function belongsTo(BelongsTo $relation, string $value): array
     {
-        $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $value);
+        $id = $this->getPrimaryId($relation->getRelated(), $value);
 
         if (!$id) {
             $bundleName = $this->bundle->model::class;
@@ -188,7 +188,7 @@ class Processor
     protected function belongsToMany(BelongsToMany $relation, array $value): void
     {
         foreach ($value as $identifier) {
-            $id = $this->getPrimaryIdFromMemory($relation->getRelated(), $identifier);
+            $id = $this->getPrimaryId($relation->getRelated(), $identifier);
 
             if (!$id) {
                 $bundleName = $this->bundle->model::class;
@@ -219,7 +219,7 @@ class Processor
     protected function morphTo(MorphTo $relation, array $value): array
     {
 //        $id = $this->sample->populator->memory->get($value[1], $value[0]);
-        $id = $this->getPrimaryIdFromMemory(new $value[1], $value[0]);
+        $id = $this->getPrimaryId(new $value[1], $value[0]);
 
         if (!$id) {
             $bundleName = $this->bundle->model::class;
@@ -385,7 +385,14 @@ class Processor
         return $data;
     }
 
-    protected function getPrimaryIdFromMemory(Model $model, string $identifier): int|string|null
+    /**
+     * Attempts to find the primary ID of the specified model's record with the given identifier.
+     *
+     * @param Model $model
+     * @param string $identifier
+     * @return int|string|null
+     */
+    protected function getPrimaryId(Model $model, string $identifier): int|string|null
     {
         $id = $this->bundle->populator->memory->get($model::class, $identifier);
 
