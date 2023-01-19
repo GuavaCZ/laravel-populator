@@ -71,7 +71,7 @@ class Populator
     /**
      * Static factory to create an instance of the class.
      *
-     * @param Bundle $bundle
+     * @param string $name
      * @return static
      */
     public static function make(string $name): static

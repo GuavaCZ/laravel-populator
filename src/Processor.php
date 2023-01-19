@@ -3,6 +3,7 @@
 namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Concerns\Pipe\DefaultsPipe;
+use Guava\LaravelPopulator\Concerns\Pipe\GeneratorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\InsertPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\MutatorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\RelatedPipe;
@@ -11,7 +12,6 @@ use Guava\LaravelPopulator\Storage\Memory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use function Guava\LaravelPopulator\Population\str_contains;
 
 /**
  * The processor is responsible for processing the samples.
@@ -21,6 +21,7 @@ class Processor
     use RelationsPipe;
     use DefaultsPipe;
     use MutatorsPipe;
+    use GeneratorsPipe;
     use InsertPipe;
     use RelatedPipe;
 
@@ -48,6 +49,7 @@ class Processor
             $this->relations(...),
             $this->defaults(...),
             $this->mutate(...),
+            $this->generators(...),
             $this->insert(...),
             $this->related(...),
         ]);

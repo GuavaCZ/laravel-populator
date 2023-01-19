@@ -3,6 +3,7 @@
 namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Concerns\Bundle\HasDefaults;
+use Guava\LaravelPopulator\Concerns\Bundle\HasGenerators;
 use Guava\LaravelPopulator\Concerns\Bundle\HasMutators;
 use Guava\LaravelPopulator\Concerns\Bundle\HasRecords;
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
@@ -20,6 +21,7 @@ class Bundle
 
     use HasDefaults;
     use HasMutators;
+    use HasGenerators;
     use HasRecords;
 
     public Model $model;
