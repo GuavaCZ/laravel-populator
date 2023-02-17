@@ -11,6 +11,7 @@ use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 /**
  * The sample class serves as a blueprint for the model it creates.
@@ -35,7 +36,9 @@ class Bundle
      *
      * @return void
      */
-    public function setup(): void {}
+    public function setup(): void
+    {
+    }
 
     /**
      * Parses all samples from the populators directory and attempts to insert them into the database.
@@ -62,22 +65,37 @@ class Bundle
             return;
         }
 
-        $path = database_path("populators/{$populator->getName()}/{$this->getName($this->model::class)}");
+        $singular = $this->getName($this->model::class);
+        $plural = Str::plural($singular);
+        $paths = collect([
+            database_path("populators/{$populator->getName()}/{$plural}"),
+            database_path("populators/{$populator->getName()}/{$singular}"),
+        ]);
 
-        if (!File::exists($path)) {
-            throw new Exception("The path '$path' does not exist. Please make sure all folders for the populator and it's bundles are created.");
+        $found = false;
+
+        $paths
+            ->filter(fn($path) => File::exists($path))
+            ->each(function ($path) use (&$found) {
+                if ($found) return;
+                $found = true;
+
+                collect(File::files($path))
+                    ->each(function (\SplFileInfo $file) {
+                        $data = include $file->getPathname();
+                        $name = str($file->getFilename())
+                            ->beforeLast('.')
+                            ->toString();
+
+                        Processor::make($this)
+                            ->process($data, $name);
+                    });
+        });
+
+        if (!$found) {
+            $modelName = $this->model::class;
+            throw new Exception("A directory for the bundle of '$modelName' does not exist. Please make sure to create one of the following directories: \n" . $paths->map(fn($path) => str($path)->prepend("\t - "))->implode("\n"));
         }
-
-        collect(File::files($path))
-            ->each(function (\SplFileInfo $file) {
-                $data = include $file->getPathname();
-                $name = str($file->getFilename())
-                    ->beforeLast('.')
-                    ->toString();
-
-                Processor::make($this)
-                    ->process($data, $name);
-            });
     }
 
     /**
