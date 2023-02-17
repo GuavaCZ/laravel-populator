@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Collection;
 
 trait RelationsPipe
@@ -45,6 +46,10 @@ trait RelationsPipe
 
                         case $relation instanceof MorphMany:
                             $this->morphMany($relation, $value);
+                            return [];
+
+                        case $relation instanceof MorphToMany:
+                            $this->morphToMany($relation, $value);
                             return [];
 
                         case $relation instanceof HasOne:

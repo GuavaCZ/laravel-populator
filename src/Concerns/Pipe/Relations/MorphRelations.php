@@ -3,10 +3,12 @@
 namespace Guava\LaravelPopulator\Concerns\Pipe\Relations;
 
 use Guava\LaravelPopulator\Exceptions\InvalidBundleException;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphOneOrMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
 
 trait MorphRelations
@@ -83,6 +85,38 @@ trait MorphRelations
                 'record' => $record,
             ]);
             $index++;
+        }
+    }
+
+    /**
+     * Processes the belongs to many relationship and queues the relation for creation.
+     *
+     * @param MorphToMany $relation
+     * @param array $value
+     * @return void
+     * @throws InvalidBundleException
+     */
+    protected function morphToMany(MorphToMany $relation, array $value): void
+    {
+        foreach ($value as $identifier) {
+            $id = $this->getPrimaryId($relation->getRelated(), $identifier);
+
+            if (!$id) {
+                $bundleName = $this->bundle->model::class;
+                throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
+            }
+
+            $this->memory->set($relation->getTable(), $identifier, [
+                'relation' => $relation::class,
+                'foreign' => [
+                    'pivot_key' => $relation->getForeignPivotKeyName(),
+                    'morph_type' => $relation->getMorphType(),
+                ],
+                'related' => [
+                    'pivot_key' => $relation->getRelatedPivotKeyName(),
+                    'id' => $id,
+                ],
+            ]);
         }
     }
 }

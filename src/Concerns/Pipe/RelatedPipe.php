@@ -6,6 +6,7 @@ use Guava\LaravelPopulator\Bundle;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\MorphOneOrMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -25,12 +26,22 @@ trait RelatedPipe
         foreach ($this->memory->all() as $table => $relations) {
 
             foreach ($relations as $name => $relation) {
+
                 if ($relation['relation'] === HasOneOrMany::class) {
                     $bundle = Bundle::make($relation['related']);
                     $bundle->populator = $this->bundle->populator;
 
                     $processor = new static($bundle);
                     $processor->process($relation['record'], $name);
+                }
+
+                if ($relation['relation'] === MorphToMany::class) {
+                    DB::table($table)
+                        ->insert([
+                            $relation['foreign']['pivot_key'] => $id,
+                            $relation['foreign']['morph_type'] => $this->bundle->model::class,
+                            $relation['related']['pivot_key'] => $relation['related']['id'],
+                        ]);
                 }
 
                 if ($relation['relation'] === BelongsToMany::class) {
