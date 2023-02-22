@@ -22,7 +22,12 @@ class Memory
      */
     public function set(string $model, string $key, mixed $value): void
     {
-        Arr::set($this->memory, "{$model}.{$key}", $value);
+        if (!Arr::exists($this->memory, $model)) {
+            Arr::set($this->memory, $model, []);
+        }
+
+        // Key can contain dots, so we cannot use dot-syntax using Arr::set().
+        $this->memory[$model][$key] = $value;
     }
 
     /**
