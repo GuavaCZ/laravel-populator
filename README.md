@@ -342,3 +342,6 @@ return [
 ```
 This will automatically create two Like's with the defined attributes and a relationship to the post they have been created in.
 
+## Other packages
+- [Filament Icon Picker](https://github.com/LukasFreyCZ/filament-icon-picker)
+- [Filament Drafts](https://github.com/GuavaCZ/filament-drafts)
