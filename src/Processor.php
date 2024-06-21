@@ -2,12 +2,15 @@
 
 namespace Guava\LaravelPopulator;
 
+use Guava\LaravelPopulator\Concerns\HasData;
+use Guava\LaravelPopulator\Concerns\HasPipeline;
 use Guava\LaravelPopulator\Concerns\Pipe\DefaultsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\GeneratorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\InsertPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\MutatorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\RelatedPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\RelationsPipe;
+use Guava\LaravelPopulator\Contracts\InteractsWithPipeline;
 use Guava\LaravelPopulator\Storage\Memory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -24,11 +27,12 @@ class Processor
     use GeneratorsPipe;
     use InsertPipe;
     use RelatedPipe;
+    use HasData;
+    use HasPipeline;
 
     protected Bundle $bundle;
 
     protected \SplFileInfo $file;
-    protected Collection $data;
     protected string $name;
 
     protected Memory $memory;
@@ -44,17 +48,8 @@ class Processor
     {
         $this->data = is_array($data) ? collect($data) : $data;
         $this->name = $name;
+        $this->pipeable->processPipeline($this, $this->data);
 
-
-
-        $this->data->pipeThrough([
-            $this->relations(...),
-            $this->defaults(...),
-            $this->mutate(...),
-            $this->generators(...),
-            $this->insert(...),
-            $this->related(...),
-        ]);
     }
 
     /**
@@ -92,9 +87,10 @@ class Processor
     /**
      * Creates an instance of the class.
      */
-    private function __construct(Bundle $bundle)
+    public function __construct(Bundle $bundle, ?InteractsWithPipeline $invoker = null)
     {
         $this->bundle = $bundle;
+        $this->pipeable = $invoker ?? app(InteractsWithPipeline::class);
         $this->memory = new Memory();
     }
 

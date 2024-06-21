@@ -29,7 +29,7 @@ trait RelationsPipe
      * @return Collection
      * @throws InvalidBundleException
      */
-    protected function relations(Collection $data): Collection
+    public function relations(Collection $data): Collection
     {
         return $data
             ->mapWithKeys(function ($value, $relationName) {

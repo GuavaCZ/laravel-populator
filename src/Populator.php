@@ -4,6 +4,7 @@ namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
+use Guava\LaravelPopulator\Concerns\HasPipeline;
 use Guava\LaravelPopulator\Storage\Memory;
 
 /**
@@ -15,6 +16,7 @@ class Populator
 {
     use HasName;
     use HasEnvironments;
+    use HasPipeline;
 
     public Memory $memory;
 
@@ -54,8 +56,6 @@ class Populator
             return;
         }
 
-        $this->memory = new Memory();
-
         foreach ($this->bundles as $bundle) {
             $bundle->handle($this);
         }
@@ -66,6 +66,7 @@ class Populator
      */
     private function __construct(string $name) {
         $this->name = $name;
+        $this->memory = new Memory();
     }
 
     /**

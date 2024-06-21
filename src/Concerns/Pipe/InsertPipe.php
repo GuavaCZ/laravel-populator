@@ -13,7 +13,7 @@ trait InsertPipe
      * @param Collection $data
      * @return Collection
      */
-    protected function insert(Collection $data): Collection
+    public function insert(Collection $data): Collection
     {
         $id = DB::table($this->bundle->table)
             ->insertGetId($data->toArray());
@@ -22,7 +22,6 @@ trait InsertPipe
         if (!$this->bundle->model->getIncrementing()) {
             $id = $data->get($this->bundle->model->getKeyName());
         }
-
         $this->bundle->populator->memory->set($this->bundle->model::class, $this->name, $id);
 
         return $data;

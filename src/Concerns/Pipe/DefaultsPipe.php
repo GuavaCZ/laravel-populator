@@ -13,7 +13,7 @@ trait DefaultsPipe
      * @param Collection $data
      * @return Collection
      */
-    protected function defaults(Collection $data): Collection
+    public function defaults(Collection $data): Collection
     {
         return $data
             ->when($this->bundle->model->usesTimestamps(),

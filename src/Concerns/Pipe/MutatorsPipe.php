@@ -13,7 +13,7 @@ trait MutatorsPipe
      * @param Collection $data
      * @return Collection
      */
-    protected function mutate(Collection $data): Collection
+    public function mutate(Collection $data): Collection
     {
         return $data
             ->when(fn() => !empty($this->bundle->mutators),

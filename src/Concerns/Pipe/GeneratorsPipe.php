@@ -13,7 +13,7 @@ trait GeneratorsPipe
      * @param Collection $data
      * @return Collection
      */
-    protected function generators(Collection $data): Collection
+    public function generators(Collection $data): Collection
     {
         return $data
             ->when(fn() => !empty($this->bundle->generators),

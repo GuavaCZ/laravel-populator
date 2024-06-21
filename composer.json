@@ -22,7 +22,9 @@
         "pestphp/pest-plugin-laravel": "^2.4",
         "phpstan/phpstan": "^1.11",
         "pestphp/pest-plugin-watch": "^2.1",
-        "larastan/larastan": "^2.9"
+        "larastan/larastan": "^2.9",
+        "spatie/phpunit-watcher": "^1.24",
+        "laravel/pint": "^1.16"
     },
     "autoload": {
         "psr-4": {
@@ -31,7 +33,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Guava\\LaravelPopulator\\": "src/",
+            "Guava\\LaravelPopulator\\Database\\Factories\\": "database/factories"
         }
     },
     "extra": {

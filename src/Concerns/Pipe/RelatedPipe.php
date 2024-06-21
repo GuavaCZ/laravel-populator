@@ -19,7 +19,7 @@ trait RelatedPipe
      * @param Collection $data
      * @return Collection
      */
-    protected function related(Collection $data): Collection
+    public function related(Collection $data): Collection
     {
         $id = $this->bundle->populator->memory->get($this->bundle->model::class, $this->name);
 

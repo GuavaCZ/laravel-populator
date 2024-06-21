@@ -2,6 +2,7 @@
 
 namespace Guava\LaravelPopulator;
 
+use Closure;
 use Exception;
 use Guava\LaravelPopulator\Concerns\Bundle\HasDefaults;
 use Guava\LaravelPopulator\Concerns\Bundle\HasGenerators;
@@ -9,6 +10,8 @@ use Guava\LaravelPopulator\Concerns\Bundle\HasMutators;
 use Guava\LaravelPopulator\Concerns\Bundle\HasRecords;
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
+use Guava\LaravelPopulator\Concerns\HasPipeline;
+use Guava\LaravelPopulator\Contracts\InteractsWithPipeline;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -25,11 +28,14 @@ class Bundle
     use HasMutators;
     use HasGenerators;
     use HasRecords;
+    use HasPipeline;
 
     public Model $model;
     public string $table;
 
     public Populator $populator;
+    protected ?Closure $makeProcessorUsing = null;
+
 
     /**
      * Can be used to set up repeating samples.
@@ -58,7 +64,8 @@ class Bundle
             collect($this->records)
                 ->each(function (array $record, $key) {
                     $modelName = $this->model::class;
-                    Processor::make($this)
+                        $this->makeProcessor()
+                        ->pipeableUsing($this->populator->getPipeable() ?? $this->getPipeable())
                         ->process($record, is_int($key) ? "{$modelName}-$key" : $key);
                 });
 
@@ -88,6 +95,7 @@ class Bundle
                             ->toString();
 
                         Processor::make($this)
+                            ->pipeableUsing($this->getPipeable() ?? $this->populator->getPipeable())
                             ->process($data, $name);
                     });
         });
@@ -96,6 +104,22 @@ class Bundle
             $modelName = $this->model::class;
             throw new Exception("A directory for the bundle of '$modelName' does not exist. Please make sure to create one of the following directories: \n" . $paths->map(fn($path) => str($path)->prepend("\t - "))->implode("\n"));
         }
+    }
+
+    public function makeProcessorUsing(?Closure $closure): static
+    {
+        $this->makeProcessorUsing = $closure;
+        return $this;
+    }
+
+
+    protected function makeProcessor(): Processor
+    {
+        if($processor = $this->makeProcessorUsing) {
+            return $processor($this);
+        }
+        return Processor::make($this);
+
     }
 
     /**
