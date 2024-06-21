@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b43b6df0dc5e3ebaae135846a11fcd02",
+    "content-hash": "3f258070b04873bc8c812078ee97885f",
     "packages": [],
     "packages-dev": [
         {
@@ -730,6 +730,53 @@
             "time": "2023-10-06T06:47:41+00:00"
         },
         {
+            "name": "evenement/evenement",
+            "version": "v3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/igorw/evenement.git",
+                "reference": "0a16b0d71ab13284339abb99d9d2bd813640efbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/igorw/evenement/zipball/0a16b0d71ab13284339abb99d9d2bd813640efbc",
+                "reference": "0a16b0d71ab13284339abb99d9d2bd813640efbc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9 || ^6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Evenement\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                }
+            ],
+            "description": "Événement is a very simple event dispatching library for PHP",
+            "keywords": [
+                "event-dispatcher",
+                "event-emitter"
+            ],
+            "support": {
+                "issues": "https://github.com/igorw/evenement/issues",
+                "source": "https://github.com/igorw/evenement/tree/v3.0.2"
+            },
+            "time": "2023-08-08T05:53:35+00:00"
+        },
+        {
             "name": "fakerphp/faker",
             "version": "v1.23.1",
             "source": {
@@ -1368,6 +1415,108 @@
                 "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.6"
             },
             "time": "2024-03-08T09:58:59+00:00"
+        },
+        {
+            "name": "larastan/larastan",
+            "version": "v2.9.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/larastan/larastan.git",
+                "reference": "5c805f636095cc2e0b659e3954775cf8f1dad1bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/larastan/larastan/zipball/5c805f636095cc2e0b659e3954775cf8f1dad1bb",
+                "reference": "5c805f636095cc2e0b659e3954775cf8f1dad1bb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/console": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/container": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/contracts": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/database": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/http": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/pipeline": "^9.52.16 || ^10.28.0 || ^11.0",
+                "illuminate/support": "^9.52.16 || ^10.28.0 || ^11.0",
+                "php": "^8.0.2",
+                "phpmyadmin/sql-parser": "^5.9.0",
+                "phpstan/phpstan": "^1.11.1"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^12.0",
+                "nikic/php-parser": "^4.19.1",
+                "orchestra/canvas": "^7.11.1 || ^8.11.0 || ^9.0.2",
+                "orchestra/testbench": "^7.33.0 || ^8.13.0 || ^9.0.3",
+                "phpunit/phpunit": "^9.6.13 || ^10.5.16"
+            },
+            "suggest": {
+                "orchestra/testbench": "Using Larastan for analysing a package needs Testbench"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                },
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Larastan\\Larastan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Can Vural",
+                    "email": "can9119@gmail.com"
+                },
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Larastan - Discover bugs in your code without running it. A phpstan/phpstan wrapper for Laravel",
+            "keywords": [
+                "PHPStan",
+                "code analyse",
+                "code analysis",
+                "larastan",
+                "laravel",
+                "package",
+                "php",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/larastan/larastan/issues",
+                "source": "https://github.com/larastan/larastan/tree/v2.9.7"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/canvural",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2024-05-27T18:33:26+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3490,6 +3639,161 @@
             "time": "2024-01-26T09:46:42+00:00"
         },
         {
+            "name": "pestphp/pest-plugin-laravel",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pestphp/pest-plugin-laravel.git",
+                "reference": "53df51169a7f9595e06839cce638c73e59ace5e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pestphp/pest-plugin-laravel/zipball/53df51169a7f9595e06839cce638c73e59ace5e8",
+                "reference": "53df51169a7f9595e06839cce638c73e59ace5e8",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^10.48.9|^11.5.0",
+                "pestphp/pest": "^2.34.7",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "laravel/dusk": "^7.13.0",
+                "orchestra/testbench": "^8.22.3|^9.0.4",
+                "pestphp/pest-dev-tools": "^2.16.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pest\\Laravel\\PestServiceProvider"
+                    ]
+                },
+                "pest": {
+                    "plugins": [
+                        "Pest\\Laravel\\Plugin"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Autoload.php"
+                ],
+                "psr-4": {
+                    "Pest\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "The Pest Laravel Plugin",
+            "keywords": [
+                "framework",
+                "laravel",
+                "pest",
+                "php",
+                "test",
+                "testing",
+                "unit"
+            ],
+            "support": {
+                "source": "https://github.com/pestphp/pest-plugin-laravel/tree/v2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-04-27T10:41:54+00:00"
+        },
+        {
+            "name": "pestphp/pest-plugin-watch",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pestphp/pest-plugin-watch.git",
+                "reference": "fd1866fac88215b9dbf0242a857864c95c26042e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pestphp/pest-plugin-watch/zipball/fd1866fac88215b9dbf0242a857864c95c26042e",
+                "reference": "fd1866fac88215b9dbf0242a857864c95c26042e",
+                "shasum": ""
+            },
+            "require": {
+                "pestphp/pest-plugin": "^2.1.1",
+                "php": "^8.1.0",
+                "react/child-process": "^0.6.5",
+                "react/event-loop": "^1.5.0"
+            },
+            "conflict": {
+                "evenement/evenement": "^1.0",
+                "pestphp/pest": "<2.33.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^2.33.0",
+                "pestphp/pest-dev-tools": "^2.16.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                },
+                "pest": {
+                    "plugins": [
+                        "Pest\\Watch\\Plugin"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pest\\Watch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Caneco",
+                    "email": "caneco@me.com"
+                }
+            ],
+            "description": "The Pest Watch Plugin",
+            "keywords": [
+                "framework",
+                "pest",
+                "php",
+                "plugin",
+                "test",
+                "testing",
+                "unit",
+                "watch"
+            ],
+            "support": {
+                "issues": "https://github.com/pestphp/pest-plugin-watch/issues",
+                "source": "https://github.com/pestphp/pest-plugin-watch/tree/v2.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-01-26T09:18:46+00:00"
+        },
+        {
             "name": "phar-io/manifest",
             "version": "2.0.4",
             "source": {
@@ -3781,6 +4085,94 @@
                 "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.8.2"
             },
             "time": "2024-02-23T11:10:43+00:00"
+        },
+        {
+            "name": "phpmyadmin/sql-parser",
+            "version": "5.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpmyadmin/sql-parser.git",
+                "reference": "011fa18a4e55591fac6545a821921dd1d61c6984"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpmyadmin/sql-parser/zipball/011fa18a4e55591fac6545a821921dd1d61c6984",
+                "reference": "011fa18a4e55591fac6545a821921dd1d61c6984",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0",
+                "symfony/polyfill-mbstring": "^1.3",
+                "symfony/polyfill-php80": "^1.16"
+            },
+            "conflict": {
+                "phpmyadmin/motranslator": "<3.0"
+            },
+            "require-dev": {
+                "phpbench/phpbench": "^1.1",
+                "phpmyadmin/coding-standard": "^3.0",
+                "phpmyadmin/motranslator": "^4.0 || ^5.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.9.12",
+                "phpstan/phpstan-phpunit": "^1.3.3",
+                "phpunit/php-code-coverage": "*",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "psalm/plugin-phpunit": "^0.16.1",
+                "vimeo/psalm": "^4.11",
+                "zumba/json-serializer": "~3.0.2"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance",
+                "phpmyadmin/motranslator": "Translate messages to your favorite locale"
+            },
+            "bin": [
+                "bin/highlight-query",
+                "bin/lint-query",
+                "bin/sql-parser",
+                "bin/tokenize-query"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpMyAdmin\\SqlParser\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "The phpMyAdmin Team",
+                    "email": "developers@phpmyadmin.net",
+                    "homepage": "https://www.phpmyadmin.net/team/"
+                }
+            ],
+            "description": "A validating SQL lexer and parser with a focus on MySQL dialect.",
+            "homepage": "https://github.com/phpmyadmin/sql-parser",
+            "keywords": [
+                "analysis",
+                "lexer",
+                "parser",
+                "query linter",
+                "sql",
+                "sql lexer",
+                "sql linter",
+                "sql parser",
+                "sql syntax highlighter",
+                "sql tokenizer"
+            ],
+            "support": {
+                "issues": "https://github.com/phpmyadmin/sql-parser/issues",
+                "source": "https://github.com/phpmyadmin/sql-parser"
+            },
+            "funding": [
+                {
+                    "url": "https://www.phpmyadmin.net/donate/",
+                    "type": "other"
+                }
+            ],
+            "time": "2024-01-20T20:34:02+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -5100,6 +5492,235 @@
                 }
             ],
             "time": "2024-04-27T21:32:50+00:00"
+        },
+        {
+            "name": "react/child-process",
+            "version": "v0.6.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/child-process.git",
+                "reference": "e71eb1aa55f057c7a4a0d08d06b0b0a484bead43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/child-process/zipball/e71eb1aa55f057c7a4a0d08d06b0b0a484bead43",
+                "reference": "e71eb1aa55f057c7a4a0d08d06b0b0a484bead43",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
+                "php": ">=5.3.0",
+                "react/event-loop": "^1.2",
+                "react/stream": "^1.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35",
+                "react/socket": "^1.8",
+                "sebastian/environment": "^5.0 || ^3.0 || ^2.0 || ^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\ChildProcess\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@clue.engineering",
+                    "homepage": "https://clue.engineering/"
+                },
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "reactphp@ceesjankiewiet.nl",
+                    "homepage": "https://wyrihaximus.net/"
+                },
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com",
+                    "homepage": "https://sorgalla.com/"
+                },
+                {
+                    "name": "Chris Boden",
+                    "email": "cboden@gmail.com",
+                    "homepage": "https://cboden.dev/"
+                }
+            ],
+            "description": "Event-driven library for executing child processes with ReactPHP.",
+            "keywords": [
+                "event-driven",
+                "process",
+                "reactphp"
+            ],
+            "support": {
+                "issues": "https://github.com/reactphp/child-process/issues",
+                "source": "https://github.com/reactphp/child-process/tree/v0.6.5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/WyriHaximus",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/clue",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-09-16T13:41:56+00:00"
+        },
+        {
+            "name": "react/event-loop",
+            "version": "v1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/event-loop.git",
+                "reference": "bbe0bd8c51ffc05ee43f1729087ed3bdf7d53354"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/bbe0bd8c51ffc05ee43f1729087ed3bdf7d53354",
+                "reference": "bbe0bd8c51ffc05ee43f1729087ed3bdf7d53354",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
+            },
+            "suggest": {
+                "ext-pcntl": "For signal handling support when using the StreamSelectLoop"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\EventLoop\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@clue.engineering",
+                    "homepage": "https://clue.engineering/"
+                },
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "reactphp@ceesjankiewiet.nl",
+                    "homepage": "https://wyrihaximus.net/"
+                },
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com",
+                    "homepage": "https://sorgalla.com/"
+                },
+                {
+                    "name": "Chris Boden",
+                    "email": "cboden@gmail.com",
+                    "homepage": "https://cboden.dev/"
+                }
+            ],
+            "description": "ReactPHP's core reactor event loop that libraries can use for evented I/O.",
+            "keywords": [
+                "asynchronous",
+                "event-loop"
+            ],
+            "support": {
+                "issues": "https://github.com/reactphp/event-loop/issues",
+                "source": "https://github.com/reactphp/event-loop/tree/v1.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/reactphp",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2023-11-13T13:48:05+00:00"
+        },
+        {
+            "name": "react/stream",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/stream.git",
+                "reference": "1e5b0acb8fe55143b5b426817155190eb6f5b18d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/stream/zipball/1e5b0acb8fe55143b5b426817155190eb6f5b18d",
+                "reference": "1e5b0acb8fe55143b5b426817155190eb6f5b18d",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
+                "php": ">=5.3.8",
+                "react/event-loop": "^1.2"
+            },
+            "require-dev": {
+                "clue/stream-filter": "~1.2",
+                "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\Stream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@clue.engineering",
+                    "homepage": "https://clue.engineering/"
+                },
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "reactphp@ceesjankiewiet.nl",
+                    "homepage": "https://wyrihaximus.net/"
+                },
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com",
+                    "homepage": "https://sorgalla.com/"
+                },
+                {
+                    "name": "Chris Boden",
+                    "email": "cboden@gmail.com",
+                    "homepage": "https://cboden.dev/"
+                }
+            ],
+            "description": "Event-driven readable and writable streams for non-blocking I/O in ReactPHP",
+            "keywords": [
+                "event-driven",
+                "io",
+                "non-blocking",
+                "pipe",
+                "reactphp",
+                "readable",
+                "stream",
+                "writable"
+            ],
+            "support": {
+                "issues": "https://github.com/reactphp/stream/issues",
+                "source": "https://github.com/reactphp/stream/tree/v1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/reactphp",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-06-11T12:45:25+00:00"
         },
         {
             "name": "rector/rector",

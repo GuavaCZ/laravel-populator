@@ -13,9 +13,16 @@
             "email": "stepan.mocjak@guava.cz"
         }
     ],
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan analyze"
+    },
     "require-dev": {
         "orchestra/testbench": "^8.0",
-        "pestphp/pest": "^2.34"
+        "pestphp/pest": "^2.34",
+        "pestphp/pest-plugin-laravel": "^2.4",
+        "phpstan/phpstan": "^1.11",
+        "pestphp/pest-plugin-watch": "^2.1",
+        "larastan/larastan": "^2.9"
     },
     "autoload": {
         "psr-4": {
