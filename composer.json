@@ -13,13 +13,18 @@
             "email": "stepan.mocjak@guava.cz"
         }
     ],
-    "require": {},
     "require-dev": {
-        "orchestra/testbench": "^8.0"
+        "orchestra/testbench": "^8.0",
+        "pestphp/pest": "^2.34"
     },
     "autoload": {
         "psr-4": {
             "Guava\\LaravelPopulator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "extra": {
@@ -27,6 +32,11 @@
             "providers": [
                 "Guava\\LaravelPopulator\\PopulatorServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     }
 }

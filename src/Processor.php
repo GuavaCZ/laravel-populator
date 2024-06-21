@@ -45,6 +45,8 @@ class Processor
         $this->data = is_array($data) ? collect($data) : $data;
         $this->name = $name;
 
+
+
         $this->data->pipeThrough([
             $this->relations(...),
             $this->defaults(...),
