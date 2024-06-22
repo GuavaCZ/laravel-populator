@@ -16,12 +16,11 @@ use Illuminate\Support\Facades\DB;
 
 trait RelatedPipe
 {
-
     /**
      * Handles the queued related models and inserts them into the database.
      *
-     * @param Collection $data
-     * @return Collection
+     * @param  Collection<string, scalar>  $data
+     * @return Collection<string, scalar>
      */
     public function related(Collection $data): Collection
     {
@@ -49,7 +48,8 @@ trait RelatedPipe
                             $relation['foreign']['pivot_key'] => $id,
                             $relation['foreign']['morph_type'] => $this->bundle->model::class,
                             $relation['related']['pivot_key'] => $relation['related']['id'],
-                        ]);
+                        ])
+                    ;
                 }
 
                 if ($relation['relation'] === BelongsToMany::class) {
@@ -57,7 +57,8 @@ trait RelatedPipe
                         ->insert([
                             $relation['foreign']['pivot_key'] => $id,
                             $relation['related']['pivot_key'] => $relation['related']['id'],
-                        ]);
+                        ])
+                    ;
                 }
 
                 if ($relation['relation'] === MorphOneOrMany::class

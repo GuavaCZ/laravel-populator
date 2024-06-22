@@ -3,31 +3,31 @@
 namespace Guava\LaravelPopulator\Concerns\Pipe\Relations;
 
 use Guava\LaravelPopulator\Exceptions\InvalidBundleException;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphOneOrMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 trait MorphRelations
 {
-
-
     /**
      * Processes the morph to relationship and sets the foreign key.
      *
-     * @param MorphTo $relation
-     * @param array $value
-     * @return array
+     * @param  MorphTo<Model, Model>  $relation
+     * @param  string[]|int[]  $value
+     * @return array<string, int|string>
+     *
      * @throws InvalidBundleException
      */
     protected function morphTo(MorphTo $relation, array $value): array
     {
         $id = $this->getPrimaryId(new $value[1], $value[0]);
 
-        if (!$id) {
+        if (! $id) {
             $bundleName = $this->bundle->model::class;
             throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value[0]}).");
         }
@@ -38,9 +38,8 @@ trait MorphRelations
     /**
      * Processes the morph one relationship and sets the foreign key.
      *
-     * @param MorphOne $relation
-     * @param array $record
-     * @return void
+     * @param  MorphOne<Model>  $relation
+     * @param  array<int|string>  $record
      */
     protected function morphOne(MorphOneOrMany $relation, array $record): void
     {
@@ -52,9 +51,8 @@ trait MorphRelations
     /**
      * Processes the morph many relationship and sets the foreign key.
      *
-     * @param MorphMany $relation
-     * @param array $items
-     * @return void
+     * @param  MorphMany<Model>  $relation
+     * @param  string[]|int[]  $items
      */
     protected function morphMany(MorphMany $relation, array $items): void
     {
@@ -64,16 +62,15 @@ trait MorphRelations
     /**
      * Processes the morph one or many relationship and sets the foreign key.
      *
-     * @param MorphOneOrMany $relation
-     * @param array $records
-     * @return void
+     * @param  MorphOneOrMany<Model>  $relation
+     * @param  array<int, array<int|string>>|array<int|string>  $records
      */
     protected function morphOneOrMany(MorphOneOrMany $relation, array $records): void
     {
         $index = 0;
         foreach ($records as $record) {
             $morphName = Str::beforeLast($relation->getForeignKeyName(), '_');
-            $record = collect($record)->merge([
+            $record = collect(Arr::wrap($record))->merge([
                 $morphName => [$this->name, $relation->getMorphClass()],
             ])->toArray();
 
@@ -91,9 +88,9 @@ trait MorphRelations
     /**
      * Processes the belongs to many relationship and queues the relation for creation.
      *
-     * @param MorphToMany $relation
-     * @param array $value
-     * @return void
+     * @param  MorphToMany<Model>  $relation
+     * @param  string[]|int[]  $value
+     *
      * @throws InvalidBundleException
      */
     protected function morphToMany(MorphToMany $relation, array $value): void
@@ -101,7 +98,7 @@ trait MorphRelations
         foreach ($value as $identifier) {
             $id = $this->getPrimaryId($relation->getRelated(), $identifier);
 
-            if (!$id) {
+            if (! $id) {
                 $bundleName = $this->bundle->model::class;
                 throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$identifier}).");
             }

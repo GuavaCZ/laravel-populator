@@ -17,12 +17,12 @@ class HasGeneratorsTest extends TestCase
         };
     }
 
-    public function test_generators_starts_empty()
+    public function testGeneratorsStartsEmpty(): void
     {
         $this->assertEmpty($this->target->generators);
     }
 
-    public function test_generate()
+    public function testGenerate(): void
     {
         $this->target->generate('foo', fn () => 'bar');
         $this->assertIsCallable($this->target->generators['foo']);

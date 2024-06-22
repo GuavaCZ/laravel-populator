@@ -2,6 +2,8 @@
 
 namespace Tests\Fixtures;
 
+use Guava\LaravelPopulator\Concerns\HasPopulation;
+use Guava\LaravelPopulator\Contracts\TracksPopulatedEntries;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,14 +12,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class TestUser extends Model implements Authenticatable
+class TestUser extends Model implements Authenticatable, TracksPopulatedEntries
 {
-    use HasFactory;
+    use HasFactory, HasPopulation;
 
     protected $table = 'users';
 
     protected $fillable = [
         'name',
+        'email',
         'is_admin',
     ];
 

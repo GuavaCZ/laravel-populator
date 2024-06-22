@@ -17,12 +17,12 @@ class HasMutatorsTest extends TestCase
         };
     }
 
-    public function test_mutate_starts_empty()
+    public function testMutateStartsEmpty(): void
     {
         $this->assertEmpty($this->target->mutators);
     }
 
-    public function test_mutate()
+    public function testMutate(): void
     {
         $this->target->mutate('foo', fn () => 'bar');
         $this->assertArrayHasKey('foo', $this->target->mutators);

@@ -17,12 +17,12 @@ class HasDefaultsTest extends TestCase
         };
     }
 
-    public function test_defaults_starts_empty()
+    public function testDefaultsStartsEmpty(): void
     {
         $this->assertEmpty($this->target->defaults);
     }
 
-    public function test_default()
+    public function testDefault(): void
     {
         $this->target->default('foo', 'bar');
         $this->assertArrayHasKey('foo', $this->target->defaults);

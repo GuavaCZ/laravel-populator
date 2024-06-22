@@ -19,24 +19,24 @@ class HasEnvironmentTest extends TestCase
         };
     }
 
-    public function test_environments_starts_empty()
+    public function testEnvironmentsStartsEmpty(): void
     {
         $this->assertEmpty($this->target->environments);
     }
 
-    public function test_environments_sets_environments()
+    public function testEnvironmentsSetsEnvironments(): void
     {
         $this->target->environments(['foo', 'bar']);
         $this->assertEquals(['foo', 'bar'], $this->target->environments);
     }
 
-    public function test_get_environments_returns_environments()
+    public function testGetEnvironmentsReturnsEnvironments(): void
     {
         $this->target->environments(['foo', 'bar']);
         $this->assertEquals($this->target->environments, $this->target->getEnvironments());
     }
 
-    public function test_check_environment_checks_against_laravel_environment()
+    public function testCheckEnvironmentChecksAgainstLaravelEnvironment(): void
     {
         $this->target->environments(['foo', 'bar']);
         $this->assertFalse($this->target->checkEnvironment());

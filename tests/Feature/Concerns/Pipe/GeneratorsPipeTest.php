@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class GeneratorsPipeTest extends TestCase
 {
-    public function test_generators()
+    public function testGenerators(): void
     {
         $populator = Populator::make('initial')
             ->pipeableUsing((new NullPipelineInvoker())->usingPipes(
@@ -26,7 +26,8 @@ class GeneratorsPipeTest extends TestCase
             ->bundles([
                 Bundle::make(TestUser::class)
                     ->generate('foo', fn () => 'bar'),
-            ]);
+            ])
+        ;
         $populator->call();
 
     }

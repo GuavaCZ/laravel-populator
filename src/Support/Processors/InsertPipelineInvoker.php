@@ -3,13 +3,18 @@
 namespace Guava\LaravelPopulator\Support\Processors;
 
 use Closure;
-use Guava\LaravelPopulator\Concerns\Pipe;
 use Guava\LaravelPopulator\Processor;
+use Illuminate\Support\Collection;
 
+/**
+ * Pipeline that handles inserting the records into the database
+ */
 class InsertPipelineInvoker extends PipelineInvoker
 {
-
-    function defaultPipes(Processor $processor): array
+    /**
+     * @return array<Closure(Collection<string, scalar>):Collection<string, scalar>>
+     */
+    public function defaultPipes(Processor $processor): array
     {
         return [
             $processor->relations(...),
@@ -17,6 +22,7 @@ class InsertPipelineInvoker extends PipelineInvoker
             $processor->mutate(...),
             $processor->generators(...),
             $processor->insert(...),
+            $processor->track(...),
             $processor->related(...),
         ];
     }

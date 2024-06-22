@@ -13,7 +13,7 @@ class BundleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_handle_with_static_records()
+    public function testHandleWithStaticRecords(): void
     {
         $populator = Populator::make('manual');
         $bundle = Bundle::make(TestUser::class)
@@ -22,13 +22,14 @@ class BundleTest extends TestCase
                     'name' => 'Foo',
                     'email' => 'foo@example.com',
                 ]),
-            ]);
+            ])
+        ;
         $bundle->handle($populator);
 
         $this->assertTrue(TestUser::whereEmail('foo@example.com')->exists());
     }
 
-    public function test_handle_with_filesystem_backed_records()
+    public function testHandleWithFilesystemBackedRecords(): void
     {
         $populator = Populator::make('initial');
         (Bundle::make(TestUser::class))->handle($populator);
@@ -38,7 +39,7 @@ class BundleTest extends TestCase
 
     }
 
-    public function test_handle_with_filesystem_backed_records_throws_missing_directory_exception()
+    public function testHandleWithFilesystemBackedRecordsThrowsMissingDirectoryException(): void
     {
         $this->expectExceptionMessageMatches('/^A directory for the bundle of/');
         $populator = Populator::make('initial_v2');
@@ -46,7 +47,7 @@ class BundleTest extends TestCase
         $bundle->handle($populator);
     }
 
-    public function test_handle_only_runs_in_correct_environment()
+    public function testHandleOnlyRunsInCorrectEnvironment(): void
     {
         $this->assertEquals(0, TestUser::count());
         $populator = Populator::make('test');
@@ -54,8 +55,25 @@ class BundleTest extends TestCase
             ->environments(['not-this-env'])
             ->record('user-foo', [
                 'name' => 'Foo',
-            ]);
+            ])
+        ;
         $bundle->handle($populator);
         $this->assertEquals(0, TestUser::count());
-   }
+    }
+
+    public function testHandleInsertUsingClosure(): void
+    {
+        $populator = Populator::make('initial');
+        $bundle = Bundle::make(TestUser::class)
+            ->performInsertUsing(function (array $data, Bundle $bundle) {
+                $created = $bundle->model->newInstance()->forceFill($data);
+                $created->saveOrFail();
+
+                return $created->getKey();
+            })
+        ;
+        $bundle->handle($populator);
+
+        $this->assertTrue(TestUser::whereEmail('foo@example.com')->exists());
+    }
 }

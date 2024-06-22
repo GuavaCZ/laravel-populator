@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class FakeBelongsTo extends Relation
 {
-
     public function addConstraints()
     {
         // TODO: Implement addConstraints() method.

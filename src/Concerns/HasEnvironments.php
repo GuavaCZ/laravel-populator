@@ -4,12 +4,15 @@ namespace Guava\LaravelPopulator\Concerns;
 
 trait HasEnvironments
 {
+    /**
+     * @var string[]
+     */
     public array $environments = [];
 
     /**
      * Sets the allowed environments.
      *
-     * @param array $environments
+     * @param  string[]  $environments
      * @return $this
      */
     public function environments(array $environments): static
@@ -22,7 +25,7 @@ trait HasEnvironments
     /**
      * Returns the allowed environments.
      *
-     * @return array
+     * @return string[]
      */
     public function getEnvironments(): array
     {
@@ -31,12 +34,9 @@ trait HasEnvironments
 
     /**
      * Checks whether the environment is valid.
-     *
-     * @return bool
      */
     public function checkEnvironment(): bool
     {
         return empty($this->getEnvironments()) || app()->environment($this->getEnvironments());
     }
-
 }

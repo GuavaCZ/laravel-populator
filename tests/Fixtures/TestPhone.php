@@ -16,6 +16,6 @@ class TestPhone extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(TestUser::class,'user_id');
+        return $this->belongsTo(TestUser::class, 'user_id');
     }
 }

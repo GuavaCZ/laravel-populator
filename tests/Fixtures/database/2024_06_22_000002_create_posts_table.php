@@ -13,10 +13,11 @@ return new class() extends Migration
         Schema::create('posts', static function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->timestamps();
-            $table->foreignId('user_id')
-                ->constrained('users')
+            $table->foreignIdFor(TestUser::class, 'user_id')
+                ->constrained()
                 ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->cascadeOnUpdate()
+            ;
             $table->text('content');
         });
     }

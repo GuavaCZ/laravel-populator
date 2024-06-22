@@ -3,9 +3,14 @@ includes:
 parameters:
     noModelMake: false
     paths:
-        - src/
-
+        - src
+        - config
+        - database
     # Level 9 is the highest level
-    level: 5
+    level: 6
+    typeAliases:
+        PopulatorArray: 'array<array-key, scalar>'
+        PopulatorCollection: 'Collection<array-key, scalar>'
+        PopulatorData: 'PopulatorArray|PopulatorCollection'
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:

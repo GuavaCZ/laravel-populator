@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class MutatorsPipeTest extends TestCase
 {
-    public function test_mutate()
+    public function testMutate(): void
     {
         $populator = Populator::make('initial')
             ->pipeableUsing((new NullPipelineInvoker())->usingPipes(
@@ -26,7 +26,8 @@ class MutatorsPipeTest extends TestCase
             ->bundles([
                 Bundle::make(TestUser::class)
                     ->mutate('email', fn ($value) => strtoupper($value)),
-            ]);
+            ])
+        ;
         $populator->call();
 
     }

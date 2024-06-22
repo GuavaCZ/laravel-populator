@@ -17,12 +17,12 @@ class HasRecordsTest extends TestCase
         };
     }
 
-    public function test_records_starts_empty()
+    public function testRecordsStartsEmpty(): void
     {
         $this->assertEmpty($this->target->records);
     }
 
-    public function test_record()
+    public function testRecord(): void
     {
         $this->target->record('foo', fn () => [
             'baz' => 'bee',
@@ -33,7 +33,7 @@ class HasRecordsTest extends TestCase
         $this->assertEquals(['foo' => ['baz' => 'bee'], 'bar' => ['baz' => 'bee']], $this->target->records);
     }
 
-    public function test_records_callable()
+    public function testRecordsCallable(): void
     {
         $this->target->records(fn () => [
             'foo' => ['baz' => 'bee'],
@@ -42,7 +42,7 @@ class HasRecordsTest extends TestCase
         $this->assertEquals(['foo' => ['baz' => 'bee'], 'bar' => ['baz' => 'bee']], $this->target->records);
     }
 
-    public function test_records_array()
+    public function testRecordsArray(): void
     {
         $this->target->records([
             'foo' => ['baz' => 'bee'],

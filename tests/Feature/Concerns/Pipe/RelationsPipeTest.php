@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class RelationsPipeTest extends TestCase
 {
-    public function test_relations()
+    public function testRelations(): void
     {
 
         $populator = Populator::make('initial')
@@ -31,12 +31,14 @@ class RelationsPipeTest extends TestCase
                             Processor::class,
                             [$bundle]
                         )
-                            ->makePartial();
+                            ->makePartial()
+                        ;
 
                         return $processor
                             ->shouldAllowMockingProtectedMethods()
                             ->shouldReceive('getPrimaryId')->once()->andReturn(1)
-                            ->getMock();
+                            ->getMock()
+                        ;
                     })
                     ->records([
                         'post-one' => [
@@ -44,7 +46,8 @@ class RelationsPipeTest extends TestCase
                             'content' => 'test',
                         ],
                     ]),
-            ]);
+            ])
+        ;
         $populator->call();
 
     }

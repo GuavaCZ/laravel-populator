@@ -33,7 +33,8 @@ class HasNameTest extends TestCase
     public function test_get_name_class_with_namespace()
     {
         $this->target->name = null;
-        $this->assertEquals('app.-foo', //FIXME this doesn't seem to be the desired behavior
+        $this->assertEquals(
+            'app.-foo', //FIXME this doesn't seem to be the desired behavior
             $this->target->getName('App\\Foo', true)
         );
     }
@@ -41,7 +42,8 @@ class HasNameTest extends TestCase
     public function test_get_name_class_without_namespace()
     {
         $this->target->name = null;
-        $this->assertEquals('foo',
+        $this->assertEquals(
+            'foo',
             $this->target->getName('App\\Foo', false)
         );
     }
@@ -49,7 +51,8 @@ class HasNameTest extends TestCase
     public function test_get_name_without_class_calls_static_class_for_name()
     {
         $this->target->name = null;
-        $this->assertStringStartsWith('has-name-test.php',
+        $this->assertStringStartsWith(
+            'has-name-test.php',
             $this->target->getName()
         );
     }
@@ -57,7 +60,8 @@ class HasNameTest extends TestCase
     public function test_get_name_removes_the_string_populator_from_class()
     {
         $this->target->name = null;
-        $this->assertEquals('foo',
+        $this->assertEquals(
+            'foo',
             $this->target->getName('App\\FooPopulator', false)
         );
     }

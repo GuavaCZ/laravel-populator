@@ -14,19 +14,19 @@ class MemoryTest extends TestCase
         $this->storage = new Memory();
     }
 
-    public function test_all_starts_empty()
+    public function testAllStartsEmpty(): void
     {
         $this->assertEmpty($this->storage->all());
     }
 
-    public function test_get_value()
+    public function testGetValue(): void
     {
         $this->assertNull($this->storage->get('foo', 'bar'));
         $this->storage->set('foo', 'bar', 'baz');
         $this->assertEquals('baz', $this->storage->get('foo', 'bar'));
     }
 
-    public function test_has_value()
+    public function testHasValue(): void
     {
         $this->assertFalse($this->storage->has('foo', 'bar'));
         $this->storage->set('foo', 'bar', 'baz');

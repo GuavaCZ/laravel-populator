@@ -18,15 +18,16 @@ use Illuminate\Support\Collection;
 
 trait RelationsPipe
 {
-    use HasOneOrManyRelations;
     use BelongsRelations;
+    use HasOneOrManyRelations;
     use MorphRelations;
 
     /**
      * Parses the relations defined on the model and processes the supported relations.
      *
-     * @param Collection $data
-     * @return Collection
+     * @param  Collection<string, mixed>  $data
+     * @return Collection<string, array<int|string>|bool|float|int|string>
+     *
      * @throws InvalidBundleException
      */
     public function relations(Collection $data): Collection
@@ -35,29 +36,33 @@ trait RelationsPipe
             ->mapWithKeys(function ($value, $relationName) {
                 if ($this->bundle->model->isRelation($relationName)) {
                     $relation = $this->bundle->model->$relationName();
-
                     switch ($relation) {
                         case $relation instanceof MorphTo:
                             return $this->morphTo($relation, $value);
 
                         case $relation instanceof MorphOne:
                             $this->morphOne($relation, $value);
+
                             return [];
 
                         case $relation instanceof MorphMany:
                             $this->morphMany($relation, $value);
+
                             return [];
 
                         case $relation instanceof MorphToMany:
                             $this->morphToMany($relation, $value);
+
                             return [];
 
                         case $relation instanceof HasOne:
                             $this->hasOne($relation, $value);
+
                             return [];
 
                         case $relation instanceof HasMany:
                             $this->hasMany($relation, $value);
+
                             return [];
 
                         case $relation instanceof BelongsTo:
@@ -65,6 +70,7 @@ trait RelationsPipe
 
                         case $relation instanceof BelongsToMany:
                             $this->belongsToMany($relation, $value);
+
                             return [];
 
                         default:
@@ -73,7 +79,7 @@ trait RelationsPipe
                 } else {
                     return [$relationName => $value];
                 }
-            });
+            })
+        ;
     }
-
 }

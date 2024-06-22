@@ -10,13 +10,15 @@ trait HasPipeline
 
     public function pipeableUsing(?InteractsWithPipeline $withPipeline): static
     {
-        if($withPipeline !== null) {
+        if ($withPipeline !== null) {
             $this->pipeable = $withPipeline;
         }
+
         return $this;
     }
 
-    public function getPipeable(): ?InteractsWithPipeline {
+    public function getPipeable(): ?InteractsWithPipeline
+    {
         return $this->pipeable;
     }
 }

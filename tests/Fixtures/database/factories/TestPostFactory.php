@@ -1,11 +1,14 @@
 <?php
 
-namespace Guava\LaravelPopulator\Database\Factories;
+namespace Tests\Database\Factories;
 
-use Tests\Fixtures\TestPost;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Tests\Fixtures\TestPost;
 use Tests\Fixtures\TestUser;
 
+/**
+ * @extends Factory<TestPost>
+ */
 class TestPostFactory extends Factory
 {
     protected $model = TestPost::class;

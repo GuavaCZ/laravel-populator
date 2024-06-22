@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Guava\LaravelPopulator\Bundle;
 use Guava\LaravelPopulator\Exceptions\InvalidBundleException;
+use Guava\LaravelPopulator\Models\Population;
 use Guava\LaravelPopulator\Populator;
 use Guava\LaravelPopulator\Processor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +22,7 @@ class ProcessorTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_resolves_primary_ids()
+    public function testResolvesPrimaryIds(): void
     {
         Populator::make('test')
             ->bundles([
@@ -33,46 +34,48 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                         'phone' => [
                             'phone' => '5555555555',
-                        ]
+                        ],
                     ]),
                 Bundle::make(TestPost::class)
-                    ->generate('id', fn() => Str::uuid())
+                    ->generate('id', fn () => Str::uuid())
                     ->records([
-                        'post-one'=> [
+                        'post-one' => [
                             'user' => 1,
                             'content' => 'test one',
                         ],
-                        'post-two'=> [
+                        'post-two' => [
                             'user' => 'email:foo@example.com',
                             'content' => 'test two',
                         ],
                     ]),
             ])
-            ->call();
+            ->call()
+        ;
         $this->assertEquals(2, TestUser::sole()->withCount('posts')->sole()->posts_count);
     }
 
-    public function test_has_one_relation()
+    public function testHasOneRelation(): void
     {
         $this->assertEquals(0, TestPhone::count());
         Populator::make('test')
             ->bundles([
                 Bundle::make(TestUser::class)
-                ->record('user-test', [
-                    'email' => 'foo@example.com',
-                    'name' => 'foo',
-                    'password' => 'password',
-                    'phone' => [
-                        'phone' => '5555555555',
-                    ]
-                ])
+                    ->record('user-test', [
+                        'email' => 'foo@example.com',
+                        'name' => 'foo',
+                        'password' => 'password',
+                        'phone' => [
+                            'phone' => '5555555555',
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
         $this->assertEquals(1, TestPhone::count());
     }
 
-    public function test_has_one_relation_throws_on_invalid_relationship()
+    public function testHasOneRelationThrowsOnInvalidRelationship(): void
     {
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessageMatches('/has an invalid .*? relation set/');
@@ -82,13 +85,14 @@ class ProcessorTest extends TestCase
                     ->record('user-test', [
                         'user' => 'invalid',
                         'phone' => '5555555555',
-                    ])
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
     }
 
-    public function test_has_many_relation()
+    public function testHasManyRelation(): void
     {
         $this->assertEquals(0, TestPost::count());
         Populator::make('test')
@@ -103,22 +107,23 @@ class ProcessorTest extends TestCase
                                 'id' => '1a4d5b58-8ee4-4adc-9628-98dcc5691b63',
                                 'content' => 'foobar',
                             ],
-                        ]
-                    ])
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
         $this->assertEquals(1, TestPost::count());
     }
 
-    public function test_belongs_to_many_relation()
+    public function testBelongsToManyRelation(): void
     {
         Populator::make('test')
             ->bundles([
                 Bundle::make(TestRole::class)
-                ->record('role-users', [
-                    'name' => 'users',
-                ]),
+                    ->record('role-users', [
+                        'name' => 'users',
+                    ]),
                 Bundle::make(TestUser::class)
                     ->record('user-test', [
                         'email' => 'foo@example.com',
@@ -126,18 +131,21 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                         'roles' => [
                             'role-users',
-                        ]
-                    ])
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
-        $this->assertEquals(1,
+        $this->assertEquals(
+            1,
             TestUser::whereEmail('foo@example.com')
                 ->withCount('roles')->sole()->roles_count,
         );
     }
 
-    public function test_belongs_to_many_relation_throws_on_invalid_relationship(){
+    public function testBelongsToManyRelationThrowsOnInvalidRelationship(): void
+    {
 
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessageMatches('/has an invalid .*? relation set/');
@@ -155,14 +163,15 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                         'roles' => [
                             'role-users-invalid',
-                        ]
-                    ])
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
     }
 
-    public function test_morphs_one_relation()
+    public function testMorphsOneRelation(): void
     {
         $this->assertEquals(0, TestImage::count());
         Populator::make('test')
@@ -174,15 +183,17 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                         'image' => [
                             'url' => 'localhost/image.png',
-                        ]
-                    ])
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
         $this->assertEquals(1, TestImage::count());
     }
 
-    public function test_morphs_one_relation_throws_on_invalid_relationship(){
+    public function testMorphsOneRelationThrowsOnInvalidRelationship(): void
+    {
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessageMatches('/has an invalid .*? relation set/');
         Populator::make('test')
@@ -191,12 +202,13 @@ class ProcessorTest extends TestCase
                     ->record('invalid-test', [
                         'url' => 'localhost/image.png',
                         'imageable' => ['invalid-test', TestUser::class],
-                    ])
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
     }
 
-    public function test_morphs_many_relation()
+    public function testMorphsManyRelation(): void
     {
         Populator::make('test')
             ->bundles([
@@ -207,22 +219,24 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                     ]),
                 Bundle::make(TestPost::class)
-                    ->generate('id', fn() => Str::uuid())
+                    ->generate('id', fn () => Str::uuid())
                     ->record('post-test', [
                         'user' => 'user-test',
                         'content' => 'foobar',
                         'comments' => [
-                            ['body' => 'comment body']
-                        ]
-                    ])
+                            ['body' => 'comment body'],
+                        ],
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
         $this->assertEquals(1, TestPost::withCount('comments')->sole()->comments_count);
 
     }
 
-    public function test_morphs_many_relation_throws_on_invalid_relationship() {
+    public function testMorphsManyRelationThrowsOnInvalidRelationship(): void
+    {
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessageMatches('/has an invalid .*? relation set/');
         Populator::make('test')
@@ -231,12 +245,14 @@ class ProcessorTest extends TestCase
                     ->record('invalid-test', [
                         'body' => 'comment body',
                         'commentable' => ['invalid-test', TestPost::class],
-                    ])
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
     }
 
-    public function test_morphs_to_many_relation_throws_on_invalid_relationship() {
+    public function testMorphsToManyRelationThrowsOnInvalidRelationship(): void
+    {
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessageMatches('/has an invalid .*? relation set/');
 
@@ -249,24 +265,25 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                     ]),
                 Bundle::make(TestPost::class)
-                    ->generate('id', fn() => Str::uuid())
+                    ->generate('id', fn () => Str::uuid())
                     ->record('post-test', [
                         'user' => 'user-test',
                         'content' => 'foobar',
                         'tags' => ['invalid-tag'],
-                    ])
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
     }
 
-    public function test_morphs_to_many_relation()
+    public function testMorphsToManyRelation(): void
     {
         Populator::make('test')
             ->bundles([
                 Bundle::make(TestTag::class)
-                ->record('tag-test', [
-                    'name' => 'test',
-                ]),
+                    ->record('tag-test', [
+                        'name' => 'test',
+                    ]),
                 Bundle::make(TestUser::class)
                     ->record('user-test', [
                         'email' => 'foo@example.com',
@@ -274,22 +291,24 @@ class ProcessorTest extends TestCase
                         'password' => 'password',
                     ]),
                 Bundle::make(TestPost::class)
-                    ->generate('id', fn() => Str::uuid())
+                    ->generate('id', fn () => Str::uuid())
                     ->record('post-test', [
                         'user' => 'user-test',
                         'content' => 'foobar',
                         'tags' => ['tag-test'],
-                    ])
+                    ]),
             ])
-            ->call();
+            ->call()
+        ;
 
-        $this->assertEquals(1,
+        $this->assertEquals(
+            1,
             TestPost::withCount('tags')->sole()->tags_count
         );
 
     }
 
-    public function test_throws_for_invalid_relationship()
+    public function testThrowsForInvalidRelationship(): void
     {
         $this->expectException(InvalidBundleException::class);
         $this->expectExceptionMessage('The relation type of faux is not supported yet');
@@ -300,6 +319,84 @@ class ProcessorTest extends TestCase
                         'name' => 'test',
                         'faux' => '',
                     ]),
-            ])->call();
+            ])->call()
+        ;
+    }
+
+    public function testTracksPopulation(): void
+    {
+        Processor::enableTracking();
+        $this->assertEquals(0, Population::count());
+        Populator::make('test')
+            ->bundles([
+                Bundle::make(TestUser::class)
+                    ->record('user-test', [
+                        'email' => 'foo@example.com',
+                        'name' => 'foo',
+                        'password' => 'password',
+                        'phone' => [
+                            'phone' => '5555555555',
+                        ],
+                    ]),
+            ])
+            ->call()
+        ;
+
+        $this->assertEquals(1, Population::count());
+    }
+
+    public function testHasPopulationTraitCanAccessPopulationRelationship(): void
+    {
+        Processor::enableTracking();
+        Populator::make('test')
+            ->bundles([
+                Bundle::make(TestUser::class)
+                    ->record('user-test', [
+                        'email' => 'foo@example.com',
+                        'name' => 'foo',
+                        'password' => 'password',
+                        'phone' => [
+                            'phone' => '5555555555',
+                        ],
+                    ]),
+            ])
+            ->call()
+        ;
+
+        $user = TestUser::with('population')->sole();
+        $this->assertEquals('test', $user->population->populator);
+        $this->assertEquals('user-test', $user->population->key);
+    }
+
+    public function testDisableTracking(): void
+    {
+        config(['populator.tracking' => true]);
+        $this->assertTrue(Processor::hasTrackingFeature());
+        Processor::disableTracking();
+        $this->assertFalse(Processor::hasTrackingFeature());
+    }
+
+    public function testDisabledTracking(): void
+    {
+        config(['populator.tracking' => true]);
+        $this->assertTrue(Processor::hasTrackingFeature());
+        Processor::disabledTracking(fn () => $this->assertFalse(Processor::hasTrackingFeature()));
+        $this->assertTrue(Processor::hasTrackingFeature());
+    }
+
+    public function testEnabledTracking(): void
+    {
+        config(['populator.tracking' => false]);
+        $this->assertFalse(Processor::hasTrackingFeature());
+        Processor::enabledTracking(fn () => $this->assertTrue(Processor::hasTrackingFeature()));
+        $this->assertFalse(Processor::hasTrackingFeature());
+    }
+
+    public function testEnableTracking(): void
+    {
+        config(['populator.tracking' => false]);
+        $this->assertFalse(Processor::hasTrackingFeature());
+        Processor::enableTracking();
+        $this->assertTrue(Processor::hasTrackingFeature());
     }
 }

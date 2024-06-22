@@ -2,6 +2,4 @@
 
 namespace Guava\LaravelPopulator\Exceptions;
 
-class InvalidBundleException extends \Exception
-{
-}
+class InvalidBundleException extends \Exception {}

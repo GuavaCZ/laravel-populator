@@ -3,21 +3,16 @@
 namespace Tests\Feature\Concerns\Pipe;
 
 use Guava\LaravelPopulator\Bundle;
-use Guava\LaravelPopulator\Concerns\Pipe\DefaultsPipe;
 use Guava\LaravelPopulator\Populator;
 use Guava\LaravelPopulator\Processor;
 use Illuminate\Support\Collection;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\UsesClass;
 use Tests\Fixtures\NullPipelineInvoker;
 use Tests\Fixtures\TestUser;
 use Tests\TestCase;
 
-#[CoversClass(DefaultsPipe::class)]
-#[UsesClass(Populator::class)]
 class DefaultsPipeTest extends TestCase
 {
-    public function test_defaults()
+    public function testDefaults(): void
     {
         $populator = Populator::make('initial')
             ->pipeableUsing((new NullPipelineInvoker())->usingPipes(
@@ -31,7 +26,8 @@ class DefaultsPipeTest extends TestCase
             ->bundles([
                 Bundle::make(TestUser::class)
                     ->default('foo', 'bar'),
-            ]);
+            ])
+        ;
         $populator->call();
 
     }

@@ -14,7 +14,11 @@
         }
     ],
     "scripts": {
-        "phpstan": "vendor/bin/phpstan analyze"
+        "analyze": "vendor/bin/phpstan analyze",
+        "format": "vendor/bin/pint",
+        "test": "vendor/bin/phpunit",
+        "coverage": "vendor/bin/phpunit -d xdebug.mode=coverage",
+        "dev-test": "vendor/bin/phpunit-watcher watch"
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
@@ -32,7 +36,8 @@
         "psr-4": {
             "Tests\\": "tests/",
             "Guava\\LaravelPopulator\\": "src/",
-            "Guava\\LaravelPopulator\\Database\\Factories\\": "database/factories"
+            "Guava\\LaravelPopulator\\Database\\Factories\\": "database/factories",
+            "Tests\\Database\\Factories\\": "tests/Fixtures/database/factories"
         }
     },
     "extra": {
@@ -40,11 +45,6 @@
             "providers": [
                 "Guava\\LaravelPopulator\\PopulatorServiceProvider"
             ]
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
         }
     }
 }

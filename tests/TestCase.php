@@ -21,8 +21,21 @@ abstract class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (
                 string $modelName,
-            ) => 'Guava\\LaravelPopulator\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            ) => 'Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        copy(__DIR__.'/../config/config.php', config_path('populator.php'));
+        //        copy(__DIR__.'/../database/migrations', database_path());
+
+    }
+
+    #[\Override]
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        if (file_exists($path = config_path('populator.php'))) {
+            unlink($path);
+        }
     }
 
     protected function getPackageProviders($app)
@@ -35,6 +48,7 @@ abstract class TestCase extends Orchestra
     protected function defineDatabaseMigrations(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/Fixtures/database');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     public function defineEnvironment($app): void
