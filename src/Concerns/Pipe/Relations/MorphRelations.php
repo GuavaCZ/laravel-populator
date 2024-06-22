@@ -29,7 +29,7 @@ trait MorphRelations
 
         if (!$id) {
             $bundleName = $this->bundle->model::class;
-            throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value}).");
+            throw new InvalidBundleException("Item {$this->name} from Sample {$bundleName} has an invalid belongsToMany relation set for {$relation->getRelationName()} (value: {$value[0]}).");
         }
 
         return [$relation->getForeignKeyName() => $id, $relation->getMorphType() => $value[1]];
