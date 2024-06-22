@@ -40,7 +40,7 @@ class RelationsPipeTest extends TestCase
                     })
                     ->records([
                         'post-one' => [
-                            'owner' => 'email:foo@example.com',
+                            'user' => 'email:foo@example.com',
                             'content' => 'test',
                         ],
                     ]),

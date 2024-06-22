@@ -5,7 +5,10 @@ namespace Tests\Fixtures;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class TestUser extends Model implements Authenticatable
 {
@@ -22,12 +25,38 @@ class TestUser extends Model implements Authenticatable
         'is_admin' => 'boolean',
     ];
 
+    public function phone(): HasOne
+    {
+        return $this->hasOne(TestPhone::class, 'user_id');
+    }
+
     /**
      * @return HasMany<TestPost>
      */
     public function posts(): HasMany
     {
         return $this->hasMany(TestPost::class, 'user_id');
+    }
+
+    /**
+     * @return BelongsToMany<TestUser>
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            TestRole::class,
+            'role_user',
+            'user_id',
+            'role_id'
+        );
+    }
+
+    /**
+     * @return MorphOne<TestImage>
+     */
+    public function image(): MorphOne
+    {
+        return $this->morphOne(TestImage::class, 'imageable');
     }
 
     public function getAuthIdentifierName(): string

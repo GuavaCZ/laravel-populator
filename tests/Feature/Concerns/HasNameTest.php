@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Concerns;
 
 use Guava\LaravelPopulator\Concerns\HasName;
 use Tests\TestCase;

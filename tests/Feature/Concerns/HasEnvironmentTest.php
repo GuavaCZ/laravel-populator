@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Concerns;
 
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Tests\TestCase;

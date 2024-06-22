@@ -3,7 +3,6 @@
 namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Console\MakePopulatorCommand;
-use Guava\LaravelPopulator\Console\MakeSampleCommand;
 use Guava\LaravelPopulator\Contracts\InteractsWithPipeline;
 use Guava\LaravelPopulator\Support\Processors\InsertPipelineInvoker;
 use Illuminate\Support\ServiceProvider;
@@ -26,7 +25,6 @@ class PopulatorServiceProvider extends ServiceProvider
 
             $this->commands([
                 MakePopulatorCommand::class,
-//                MakeSampleCommand::class,
             ]);
         }
     }

@@ -18,10 +18,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-laravel": "^2.4",
         "phpstan/phpstan": "^1.11",
-        "pestphp/pest-plugin-watch": "^2.1",
         "larastan/larastan": "^2.9",
         "spatie/phpunit-watcher": "^1.24",
         "laravel/pint": "^1.16"

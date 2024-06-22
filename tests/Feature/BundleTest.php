@@ -34,7 +34,7 @@ class BundleTest extends TestCase
         (Bundle::make(TestUser::class))->handle($populator);
         (Bundle::make(TestPost::class))->handle($populator);
 
-        $this->assertEquals(1, TestUser::whereEmail('foo@example.com')->count('posts'));
+        $this->assertEquals(1, TestUser::whereEmail('foo@example.com')->withCount('posts')->sole()->posts_count);
 
     }
 
@@ -46,13 +46,16 @@ class BundleTest extends TestCase
         $bundle->handle($populator);
     }
 
-    //    public function test_setup()
-    //    {
-    //
-    //    }
-    //
-    //    public function test_make()
-    //    {
-    //
-    //    }
+    public function test_handle_only_runs_in_correct_environment()
+    {
+        $this->assertEquals(0, TestUser::count());
+        $populator = Populator::make('test');
+        $bundle = Bundle::make(TestUser::class)
+            ->environments(['not-this-env'])
+            ->record('user-foo', [
+                'name' => 'Foo',
+            ]);
+        $bundle->handle($populator);
+        $this->assertEquals(0, TestUser::count());
+   }
 }
