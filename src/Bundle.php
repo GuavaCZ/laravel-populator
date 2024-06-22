@@ -38,15 +38,6 @@ class Bundle
 
 
     /**
-     * Can be used to set up repeating samples.
-     *
-     * @return void
-     */
-    public function setup(): void
-    {
-    }
-
-    /**
      * Parses all samples from the populators directory and attempts to insert them into the database.
      * @param Populator $populator
      * @return void
