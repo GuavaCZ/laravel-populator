@@ -16,7 +16,7 @@ trait InsertPipe
     /**
      * Inserts the model into the database.
      *
-     * @param  Collection<string, scalar>  $data
+     * @param Collection<string, scalar> $data
      * @return Collection<string, scalar>
      *
      * @throws InvalidBundleException
@@ -31,19 +31,18 @@ trait InsertPipe
     }
 
     /**
-     * @param  array<string, scalar>  $data
+     * @param array<string, scalar> $data
      */
-    public function insertBundle(array $data, Bundle $bundle): int | string
+    public function insertBundle(array $data, Bundle $bundle): int|string
     {
         if ($this->performInsertUsing) {
             return $this->performInsertUsing->insertDataFromBundle($data, $bundle);
         }
         $id = DB::table($bundle->table)
-            ->insertGetId($data)
-        ;
+            ->insertGetId($data);
 
         // Get the ID if it's not auto incrementing
-        if (! $bundle->model->getIncrementing()) {
+        if (!$bundle->model->getIncrementing()) {
             return data_get($data, $bundle->model->getKeyName());
         }
 
@@ -51,24 +50,25 @@ trait InsertPipe
     }
 
     /**
-     * @param  Closure(array<string, scalar>,Bundle):(int|string)|InteractsWithBundleInsert|null  $withBundleInsert
+     * @param Closure(array<string, scalar>,Bundle):(int|string)|InteractsWithBundleInsert|null $withBundleInsert
      * @return $this
      */
-    public function performInsertUsing(null | Closure | InteractsWithBundleInsert $withBundleInsert): static
+    public function performInsertUsing(null|Closure|InteractsWithBundleInsert $withBundleInsert): static
     {
         if ($withBundleInsert) {
             $this->performInsertUsing = $withBundleInsert instanceof InteractsWithBundleInsert ?
                 $withBundleInsert :
-                new readonly class($withBundleInsert) implements InteractsWithBundleInsert
-                {
+                new class($withBundleInsert) implements InteractsWithBundleInsert {
                     public function __construct(
-                        protected Closure $insert
-                    ) {}
+                        readonly protected Closure $insert
+                    )
+                    {
+                    }
 
                     /**
-                     * @param  array<string,scalar>  $data
+                     * @param array<string,scalar> $data
                      */
-                    public function insertDataFromBundle(array $data, Bundle $bundle): int | string
+                    public function insertDataFromBundle(array $data, Bundle $bundle): int|string
                     {
                         return forward_static_call($this->insert, $data, $bundle);
                     }
