@@ -6,23 +6,25 @@ use Illuminate\Support\Collection;
 
 trait GeneratorsPipe
 {
-
     /**
      * Adds default values for attributes that are not set.
      *
-     * @param Collection $data
-     * @return Collection
+     * @param  Collection<string, scalar>  $data
+     * @return Collection<string, scalar>
      */
-    protected function generators(Collection $data): Collection
+    public function generators(Collection $data): Collection
     {
         return $data
-            ->when(fn() => !empty($this->bundle->generators),
-                fn(Collection $collection) => $collection->merge(
+            ->when(
+                fn () => ! empty($this->bundle->generators),
+                fn (Collection $collection) => $collection->merge(
                     collect($this->bundle->generators)
-                        ->filter(fn($item, $key) => !$data->has($key))
+                        ->filter(fn ($item, $key) => ! $data->has($key))
                         ->map(fn ($value) => app()->call($value, [
-                            'attributes' => $data->toArray()
+                            'attributes' => $data->toArray(),
                         ]))
-                ));
+                )
+            )
+        ;
     }
 }

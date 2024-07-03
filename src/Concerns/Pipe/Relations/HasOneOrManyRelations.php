@@ -2,6 +2,7 @@
 
 namespace Guava\LaravelPopulator\Concerns\Pipe\Relations;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
@@ -9,13 +10,11 @@ use Illuminate\Support\Str;
 
 trait HasOneOrManyRelations
 {
-
     /**
      * Handles the hasOne relation of the processed record.
      *
-     * @param HasOne $relation
-     * @param array $record
-     * @return void
+     * @param  HasOne<Model>  $relation
+     * @param  array<array<string|int>>  $record
      */
     protected function hasOne(HasOne $relation, array $record): void
     {
@@ -27,9 +26,8 @@ trait HasOneOrManyRelations
     /**
      * Handles the hasMany relation of the processed record.
      *
-     * @param HasMany $relation
-     * @param array $records
-     * @return void
+     * @param  HasMany<Model>  $relation
+     * @param  array<array<int, array<string|int>>>  $records
      */
     protected function hasMany(HasMany $relation, array $records): void
     {
@@ -39,9 +37,8 @@ trait HasOneOrManyRelations
     /**
      * Handles the hasOneOrMany relation of the procesed record.
      *
-     * @param HasOneOrMany $relation
-     * @param array $records
-     * @return void
+     * @param  HasOneOrMany<Model>  $relation
+     * @param  array<array<int, array<string|int>>>  $records
      */
     protected function hasOneOrMany(HasOneOrMany $relation, array $records): void
     {
@@ -54,7 +51,7 @@ trait HasOneOrManyRelations
                 'related' => $relation->getRelated()::class,
                 'record' => array_merge($record, [
                     $relationName => $this->name,
-                ])
+                ]),
             ]);
             $index++;
         }

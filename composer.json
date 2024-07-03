@@ -13,13 +13,31 @@
             "email": "stepan.mocjak@guava.cz"
         }
     ],
-    "require": {},
+    "scripts": {
+        "analyze": "vendor/bin/phpstan analyze",
+        "format": "vendor/bin/pint",
+        "test": "vendor/bin/phpunit",
+        "coverage": "vendor/bin/phpunit -d xdebug.mode=coverage",
+        "dev-test": "vendor/bin/phpunit-watcher watch"
+    },
     "require-dev": {
-        "orchestra/testbench": "^8.0"
+        "orchestra/testbench": "^8.0",
+        "phpstan/phpstan": "^1.11",
+        "larastan/larastan": "^2.9",
+        "spatie/phpunit-watcher": "^1.24",
+        "laravel/pint": "^1.16"
     },
     "autoload": {
         "psr-4": {
             "Guava\\LaravelPopulator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/",
+            "Guava\\LaravelPopulator\\": "src/",
+            "Guava\\LaravelPopulator\\Database\\Factories\\": "database/factories",
+            "Tests\\Database\\Factories\\": "tests/Fixtures/database/factories"
         }
     },
     "extra": {

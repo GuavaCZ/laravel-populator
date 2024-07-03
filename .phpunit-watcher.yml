@@ -1,0 +1,3 @@
+notifications:
+  passingTests: false
+  failingTests: false

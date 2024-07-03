@@ -9,20 +9,17 @@ use Illuminate\Support\Arr;
  */
 class Memory
 {
-
+    /**
+     * @var array<class-string, array<string, mixed>>
+     */
     private array $memory = [];
 
     /**
      * Stores the passed data in the memory.
-     *
-     * @param string $model
-     * @param string $key
-     * @param mixed $value
-     * @return void
      */
     public function set(string $model, string $key, mixed $value): void
     {
-        if (!Arr::exists($this->memory, $model)) {
+        if (! Arr::exists($this->memory, $model)) {
             Arr::set($this->memory, $model, []);
         }
 
@@ -32,10 +29,6 @@ class Memory
 
     /**
      * Returns the stored data for the passed model and key.
-     *
-     * @param string $model
-     * @param string $key
-     * @return mixed
      */
     public function get(string $model, string $key): mixed
     {
@@ -44,10 +37,6 @@ class Memory
 
     /**
      * Checks if the stored data for the passed model exists in memory.
-     *
-     * @param string $model
-     * @param string $key
-     * @return bool
      */
     public function has(string $model, string $key): bool
     {
@@ -57,11 +46,10 @@ class Memory
     /**
      * Returns the stored data from memory.
      *
-     * @return array
+     * @return array<class-string, array<string, mixed>>
      */
     public function all(): array
     {
         return $this->memory;
     }
-
 }

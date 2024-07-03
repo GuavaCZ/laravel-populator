@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+parameters:
+    noModelMake: false
+    paths:
+        - src
+        - config
+        - database
+    # Level 9 is the highest level
+    level: 6
+    typeAliases:
+        PopulatorArray: 'array<array-key, scalar>'
+        PopulatorCollection: 'Collection<array-key, scalar>'
+        PopulatorData: 'PopulatorArray|PopulatorCollection'
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:

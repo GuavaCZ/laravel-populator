@@ -18,6 +18,30 @@ You can install the package with composer:
   composer require guava/laravel-populator
 ```
 
+
+You can optionally publish the database migrations if you plan to enable [tracking](#tracking-inserted-models)
+
+```bash
+php artisan vendor:publish --provider 'Guava\LaravelPopulator\PopulatorServiceProvider' --tag 'migrations'
+php artisan migrate
+```
+
+or publish the config
+
+```bash
+php artisan vendor:publish --provider 'Guava\LaravelPopulator\PopulatorServiceProvider' --tag 'config'
+```
+
+which currently provides the following options
+
+**config/populator.php**
+```php
+return [
+    'tracking' => false,
+    'population_model' => '\Guava\LaravelPopulator\Models\Population',
+];
+```
+
 ## How it works
 
 There are three major terms that Laravel Populator introduces:
@@ -137,6 +161,42 @@ Populator::make('v1')
 
 This will call your populator and all it's defined bundles (more information in the Bundles section)
 
+### Reversing a populator
+The records inserted by a populator can be removed if [tracking](#enabling-tracking) is enabled when the populator was run.
+
+```php
+Populator::make('v1')
+    ->bundles([//your bundles to reverse or leave blank for all bundles in the populator])
+    ->rollback()
+```
+
+Rollbacks will filter using the following condition
+
+1. Population populator name
+2. Bundle model classes
+3. Bundle name
+
+This allows you to control what bundles are rolled back from a populator.
+
+For example you can rollback a subset of the bundles from the populator 
+
+```php
+
+Populator::make('initial')
+    ->bundles([
+        Bundle::make(User::class),
+        Bundle::make(Post::class),
+    ])
+    ->call();
+//User and Post entries now exist 
+
+Populator::make('initial')
+    ->bundles([Bundle::make(Post::class)])
+    ->rollback();
+//Post entries were removed
+```
+
+
 ### Environment
 Populators can be set to be executed only on specific environments. You might most likely want to seed different data for your local environment and your production environment.
 
@@ -209,6 +269,22 @@ Bundle::make(User::class)
         ],
     ]);
 ...
+```
+
+## Override insert behavior 
+
+If you need to customize the insertion behavior for records you can call `performInsertUsing()` on a bundle.
+
+For example, to perform an updateOrCreate instead of an insert
+
+```php
+ Bundle::make(User::class)
+    ->performInsertUsing(function (array $data, Bundle $bundle) {
+        return $bundle->model::updateOrCreate(
+            Arr::only($data, ['email']),
+            Arr::except($data, ['email'])
+        )->getKey();
+    });
 ```
 
 ## Relations
@@ -341,6 +417,85 @@ return [
 ];
 ```
 This will automatically create two Like's with the defined attributes and a relationship to the post they have been created in.
+
+## Tracking inserted models
+
+Inserted models by a populator can be tracked in the database by enabling the tracking feature in Laravel populator. 
+
+```php
+\Guava\LaravelPopulator\Models\Population::first()
+->populatable; //provides access to the model that was inserted by Laravel populator.
+```
+
+Laravel populator provides a trait `[HasPopulation.php](src%2FConcerns%2FHasPopulation.php)` to access
+the Population from models
+
+```php
+class User extends Model implements TracksPopulatedEntries
+{
+    use HasPopulation;
+}
+```
+
+The model then has access to the Population relationship by `$model->population`
+
+### Enabling tracking
+Tracking can be enabled either by enabling the feature inside the published configuration file or by enabling it 
+in the boot method of a service provider.
+
+*Enabling by config*:
+
+**config/populator.php**
+```php
+return [
+    'tracking' => true,
+    //...other options
+];
+```
+
+*Enabling by provider*:
+
+**AppServiceProvider.php**
+```php
+public function boot() {
+    \Guava\LaravelPopulator\Facades\Feature::enableTrackingFeature();
+}
+```
+
+### Marking models for tracking
+
+Models must implement [TracksPopulatedEntries.php](src%2FContracts%2FTracksPopulatedEntries.php) to opt in for saving populations.
+
+```php
+class User extends Model implements TracksPopulatedEntries
+{
+}
+```
+
+### Swapping the Population model
+
+The population model can be changed by setting the model class inside the published configuration file or by enabling it
+in the boot method of a service provider
+
+*Enabling by config*:
+
+**config/populator.php**
+```php
+return [
+    'population_model' => SomeModel::class,
+    //...other options
+];
+```
+
+*Enabling by provider*:
+
+**AppServiceProvider.php**
+```php
+public function boot() {
+    \Guava\LaravelPopulator\Facades\Feature::customPopulationModel(SomeModel::class);
+}
+```
+
 
 ## Other packages
 - [Filament Icon Picker](https://github.com/LukasFreyCZ/filament-icon-picker)

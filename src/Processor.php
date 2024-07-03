@@ -2,12 +2,17 @@
 
 namespace Guava\LaravelPopulator;
 
+use Guava\LaravelPopulator\Concerns\HasData;
+use Guava\LaravelPopulator\Concerns\HasPipeline;
 use Guava\LaravelPopulator\Concerns\Pipe\DefaultsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\GeneratorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\InsertPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\MutatorsPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\RelatedPipe;
 use Guava\LaravelPopulator\Concerns\Pipe\RelationsPipe;
+use Guava\LaravelPopulator\Concerns\Pipe\TracksPopulationPipe;
+use Guava\LaravelPopulator\Contracts\InteractsWithPipeline;
+use Guava\LaravelPopulator\Facades\Feature;
 use Guava\LaravelPopulator\Storage\Memory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -18,17 +23,20 @@ use Illuminate\Support\Facades\DB;
  */
 class Processor
 {
-    use RelationsPipe;
     use DefaultsPipe;
-    use MutatorsPipe;
     use GeneratorsPipe;
+    use HasData;
+    use HasPipeline;
     use InsertPipe;
+    use MutatorsPipe;
     use RelatedPipe;
+    use RelationsPipe;
+    use TracksPopulationPipe;
 
     protected Bundle $bundle;
 
     protected \SplFileInfo $file;
-    protected Collection $data;
+
     protected string $name;
 
     protected Memory $memory;
@@ -36,33 +44,20 @@ class Processor
     /**
      * Processes the passed data through a set of pipelines.
      *
-     * @param array|Collection $data The data to process.
-     * @param string $name Name of the current 'process'.
-     * @return void
+     * @param  array<string, scalar>|Collection<string, scalar>  $data  The data to process.
+     * @param  string  $name  Name of the current 'process'.
      */
-    public function process(array|Collection $data, string $name): void
+    public function process(array | Collection $data, string $name): void
     {
         $this->data = is_array($data) ? collect($data) : $data;
         $this->name = $name;
-
-        $this->data->pipeThrough([
-            $this->relations(...),
-            $this->defaults(...),
-            $this->mutate(...),
-            $this->generators(...),
-            $this->insert(...),
-            $this->related(...),
-        ]);
+        $this->pipeable->processPipeline($this, $this->data);
     }
 
     /**
      * Attempts to find the primary ID of the specified model's record with the given identifier.
-     *
-     * @param Model $model
-     * @param string $identifier
-     * @return int|string|null
      */
-    protected function getPrimaryId(Model $model, string $identifier): int|string|null
+    protected function getPrimaryId(Model $model, string $identifier): int | string | null
     {
         $id = $this->bundle->populator->memory->get($model::class, $identifier);
 
@@ -90,21 +85,75 @@ class Processor
     /**
      * Creates an instance of the class.
      */
-    private function __construct(Bundle $bundle)
+    final public function __construct(Bundle $bundle, ?InteractsWithPipeline $invoker = null)
     {
         $this->bundle = $bundle;
+        $this->pipeable = $invoker ?? app(InteractsWithPipeline::class);
         $this->memory = new Memory();
     }
 
     /**
      * Static factory to create an instance of the class.
-     *
-     * @param Bundle $bundle
-     * @return static
      */
     public static function make(Bundle $bundle): static
     {
         return new static($bundle);
     }
 
+    /**
+     * Enable tracking model populations
+     */
+    public static function enableTracking(): void
+    {
+        Feature::enableTrackingFeature();
+    }
+
+    /**
+     * Disable tracking model populations
+     */
+    public static function disableTracking(): void
+    {
+        Feature::disableTrackingFeature();
+    }
+
+    /**
+     * Runs a closure with tracking temporarily disabled
+     */
+    public static function disabledTracking(\Closure $callable): void
+    {
+        $enabled = static::hasTrackingFeature();
+        try {
+            if ($enabled) {
+                static::disableTracking();
+            }
+            $callable();
+        } finally {
+            if ($enabled) {
+                static::enableTracking();
+            }
+        }
+    }
+
+    /**
+     * Runs a closure with tracking temporarily enabled
+     */
+    public static function enabledTracking(\Closure $callable): void
+    {
+        $enabled = static::hasTrackingFeature();
+        try {
+            if (! $enabled) {
+                static::enableTracking();
+            }
+            $callable();
+        } finally {
+            if (! $enabled) {
+                static::disableTracking();
+            }
+        }
+    }
+
+    public static function hasTrackingFeature(): bool
+    {
+        return Feature::hasTrackingFeature();
+    }
 }

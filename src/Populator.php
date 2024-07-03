@@ -4,26 +4,33 @@ namespace Guava\LaravelPopulator;
 
 use Guava\LaravelPopulator\Concerns\HasEnvironments;
 use Guava\LaravelPopulator\Concerns\HasName;
+use Guava\LaravelPopulator\Concerns\HasPipeline;
+use Guava\LaravelPopulator\Contracts\TracksPopulatedEntries;
+use Guava\LaravelPopulator\Exceptions\FeatureNotEnabledException;
+use Guava\LaravelPopulator\Facades\Feature;
+use Guava\LaravelPopulator\Models\Population;
 use Guava\LaravelPopulator\Storage\Memory;
 
 /**
  * The populator is used to populate your database with the defined bundles of model records.
- *
- * @package Guava\LaravelPopulator
  */
 class Populator
 {
-    use HasName;
     use HasEnvironments;
+    use HasName;
+    use HasPipeline;
 
     public Memory $memory;
 
+    /**
+     * @var Bundle[]
+     */
     public array $bundles = [];
 
     /**
      * Defines all bundles of the populator.
      *
-     * @param array $bundles
+     * @param  Bundle[]  $bundles
      * @return $this
      */
     public function bundles(array $bundles): static
@@ -44,17 +51,55 @@ class Populator
     }
 
     /**
-     * Calls the defined samples to populate the database.
+     * Deletes any inserted records that were tracked by Population.
      *
-     * @return void
+     * In order to be eligible for tracking @return void
+     *
+     * @throws FeatureNotEnabledException
+     *
+     * @see TracksPopulatedEntries
+     * and tracking must not be disabled (either by config or service provider)
+     */
+    public function rollback(): void
+    {
+        throw_unless(Feature::hasTrackingFeature(), FeatureNotEnabledException::class, 'Rollback is not allowed when tracking is disabled');
+
+        $bundles = collect($this->bundles)
+            ->map(function (Bundle $bundle) {
+                return $bundle->getName();
+            })
+        ;
+
+        $classes = collect($this->bundles)
+            ->map(function (Bundle $bundle) {
+                return $bundle->model->getMorphClass();
+            })
+        ;
+
+        Population::where('populator', '=', $this->getName())
+            ->where(function ($query) use ($bundles, $classes) {
+                return $query
+                    ->when($classes->isNotEmpty(), fn ($query) => $query->whereIn('populatable_type', $classes))
+                    ->when($bundles->isNotEmpty(), fn ($query) => $query->whereIn('bundle', $bundles))
+                ;
+            })
+            ->orderBy('id', 'desc')
+            ->lazy()
+            ->each(function (Population $record) {
+                $record->populatable()->delete();
+                $record->delete();
+            })
+        ;
+    }
+
+    /**
+     * Calls the defined samples to populate the database.
      */
     private function handle(): void
     {
-        if (!$this->checkEnvironment()) {
+        if (! $this->checkEnvironment()) {
             return;
         }
-
-        $this->memory = new Memory();
 
         foreach ($this->bundles as $bundle) {
             $bundle->handle($this);
@@ -64,19 +109,17 @@ class Populator
     /**
      * Creates an instance of the class.
      */
-    private function __construct(string $name) {
+    final private function __construct(string $name)
+    {
         $this->name = $name;
+        $this->memory = new Memory();
     }
 
     /**
      * Static factory to create an instance of the class.
-     *
-     * @param string $name
-     * @return static
      */
     public static function make(string $name): static
     {
         return new static($name);
     }
-
 }
